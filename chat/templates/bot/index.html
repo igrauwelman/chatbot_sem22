@@ -14,12 +14,12 @@
 	<body>
     {#  FIXED TOP NAVIGATION #}
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-          <a class="navbar-brand" href="#">Seminar &raquo;Schreiben im Fremdsprachenunterricht&laquo; &nbsp; &nbsp; &nbsp;</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand" href="#">Seminar &raquo;Schreiben im Fremdsprachenunterricht&laquo; &nbsp; &nbsp; &nbsp;</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav mr-auto">
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
               <li class="nav-item active">
                 <a class="nav-link" href="#">Chat<span class="sr-only">(current)</span></a>
               </li>
@@ -36,6 +36,7 @@
             </form> -->
           </div>
         </nav>
+    <div style="height:3em;"></div>
     {#  MAIN CONTENT #}
 			<div class="row justify-content-center h-75">
                 {# List of Bots #}
@@ -93,10 +94,10 @@
 							<span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
 							<div class="action_menu">
 								<ul>
-									<li><i class="fas fa-user-circle"></i> View profile</li>
-									<li><i class="fas fa-users"></i> Add to close friends</li>
-									<li><i class="fas fa-plus"></i> Add to group</li>
-									<li><i class="fas fa-ban"></i> Block</li>
+									<!--<li><i class="fas fa-user-circle"></i> View profile</li>-->
+									<!--<li><i class="fas fa-users"></i> Add to close friends</li>-->
+									<!--<li><i class="fas fa-plus"></i> Add to group</li>-->
+                                    <li><a href="{% url 'restart_chat' chatsession.id %}"><i class="fas fa-ban"></i>Restart chat</a></li>
 								</ul>
 							</div>
 						</div>

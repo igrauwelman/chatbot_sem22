@@ -21,20 +21,19 @@
 ####
 
 import string
-import lefffDB
+from chat.models import FrenchLex
 ##from random import choice
 import re
 
+
 class FrenchLinguist:
 
-    dic = lefffDB.Lefff()
-    dataBaseStatus = dic.connect()
     motsPasApresQue = ["mais","enfin","bon"]
     listeClitiques=["je","j","me","m","tu","il","ils","elles","le","l",
                         "la","ne","n",
                         "te","t","en","y","lui","se","s","vous","nous","leur"]
     dicClitPersSource = {1:["je","j","nous"],2:["tu","vous"]}
-##    dicClitPersCible = {1:"je",2:"vous"}
+    #  dicClitPersCible = {1:"je",2:"vous"}
     listeElis = ["je","te","me","se","le","la","ne","que","ce","de"]
     
     remplacements12 = [("je vous","vous me"),("je ne vous","vous ne me"),
@@ -48,7 +47,7 @@ class FrenchLinguist:
     #               appliquées !
     
     
-    def changePersonne(self,liste):
+    def changePersonne(self, liste):
         """ fonction qui remplace les verbes par la personne contraire
             (la personne de l'interlocuteur ou du locuteur respectivement)
             et les pronoms qui vont avec.
@@ -59,17 +58,17 @@ class FrenchLinguist:
             permettait...)
         """
         #  on trouve les verbes à la 1ère personne qu'il faudra remplacer
-        indexVerbes1 = self.candidatsVerbaux(self.dicClitPersSource[1],liste)
+        indexVerbes1 = self.candidatsVerbaux(self.dicClitPersSource[1], liste)
         # et on les remplace
         for i in indexVerbes1:
-            liste[i] = self.dic.changePersonne(liste[i],1,2)
+            liste[i] = FrenchLex.changePersonne(liste[i], 1, 2)
 
         #  on trouve les verbes à la 2e personne qu'il faudra remplacer
-        indexVerbes2 = self.candidatsVerbaux(self.dicClitPersSource[2],liste)
+        indexVerbes2 = self.candidatsVerbaux(self.dicClitPersSource[2], liste)
         # et on les remplace (si ce n'est pas déjà le résultat d'un remplacement)
         for i in indexVerbes2:
             if i not in indexVerbes1:
-                liste[i] = self.dic.changePersonne(liste[i],2,1,pluriel=False)
+                liste[i] = FrenchLex.changePersonne(liste[i], 2, 1, pluriel=False)
 
         # on passe aux pronoms :
         nouvelleListe=["" for mot in liste]
@@ -77,21 +76,20 @@ class FrenchLinguist:
         for cle,valeur in self.remplacements12: # chaque remplacement
             listeMotsAvant = cle.split()
             listeMotsApres = valeur.split()
-            neuf = self.remplaceSousListe(listeMotsAvant,listeMotsApres,liste)
+            neuf = self.remplaceSousListe(listeMotsAvant, listeMotsApres,liste)
             # copier tout ce qui est nouveau s'il n'y a pas déjà un remplacement
             for index, mot in enumerate(liste):
                 if nouvelleListe[index] == "" and mot != neuf[index]:
                     nouvelleListe[index] = neuf[index]
         # remplacer les mots qui n'ont pas été touchés :
-        for index,mot in enumerate(nouvelleListe):
-            if mot == "" :
+        for index, mot in enumerate(nouvelleListe):
+            if mot == "":
                 nouvelleListe[index]=liste[index]
 
         return nouvelleListe
         
-        
 
-    def candidatsVerbaux(self,liste2cles,liste2mots):
+    def candidatsVerbaux(self, liste2cles, liste2mots):
         """ rend une liste d'indices de verbes qui suivent certaines clés,
             par exemple 'je' ou 'j'.
             par exemple, pour la input
@@ -142,17 +140,17 @@ class FrenchLinguist:
         """ fonction pour printer des lignes qui ont été travaillées
             et où il est donc possible qu'il manque certaines élisions
         """
-	#print "___"+chaine
+        # print "___"+chaine
         # posttraitement :
         # pour l'instant seulement des élisions
         for clitique in self.listeElis:
             # pour chaque clitique à éliser
-	    #print clitique
+            # print clitique
             # crée une cdc avec ce clitique plus une voyelle
             regsSourceString = "[ ']"+clitique+" ([aeiouyéêèùûîô])"
-	    #uStr = unicode("田リチャー", "utf-8")
-	    #regsSourceString = unicode(regsSourceString,"iso-8859-1")
-	    #regsSourceString = regsSourceString.decode("iso-8859-1")
+            # uStr = unicode("田リチャー", "utf-8")
+            # regsSourceString = unicode(regsSourceString,"iso-8859-1")
+            # regsSourceString = regsSourceString.decode("iso-8859-1")
             # en faire une expression régulière
             regSourceExp = re.compile(regsSourceString)
             # crée une cdc de remplacement
@@ -163,26 +161,23 @@ class FrenchLinguist:
             # cela part de l'idée qu'on n'a toujours qu'un caractère
             # à enléver
             regsCibleString = " "+clitique[:-1]+regsCibleString
-	    #regsCibleString = unicode(regsCibleString,"iso-8859-1")
-	    #regsCibleString = regsCibleString.decode("iso-8859-1")
-	    #regsCibleString = unicode(regsCibleString)
+            #regsCibleString = unicode(regsCibleString,"iso-8859-1")
+            #regsCibleString = regsCibleString.decode("iso-8859-1")
+            #regsCibleString = unicode(regsCibleString)
             # ici se fait le vrai travail :
             # à l'aide de l'expression régulière source,
             # nous remplaçons cette expression par le cible dans
             # la chaîne à traiter content.decode(encoding)).encode(encoding)
-	    #encoding = "iso-8859-1"
-	    #chaine = unicode(" "+chaine,"utf-8")
-	    #.decode(encoding).encode(encoding)
+            #encoding = "iso-8859-1"
+            #chaine = unicode(" "+chaine,"utf-8")
+            #.decode(encoding).encode(encoding)
             chaine = (regSourceExp.sub(regsCibleString," "+chaine))[1:]
 
         chaine = re.sub(" +"," ",chaine)
 
         # on recode pour que ça s'affiche bien
-##        chaine = self.recode(chaine)
+        # chaine = self.recode(chaine)
         return chaine
-        
-        
-
 
     def recode(self,chaine):
         # nécessaire pour windows,
@@ -221,9 +216,6 @@ class FrenchLinguist:
         resultat.pop(0)
         # on rend le résultat.
         return resultat
-        
-        
-
 
     def choisirBonnePhrase(self,liste2phrases):
         """ prend par défaut une phrase où le patient
@@ -238,7 +230,6 @@ class FrenchLinguist:
                 if clit in phrase: break
         return bonnePhrase
 
-
     def nettoyerTexte(self,texte):
         """ nettoie le texte en le mettant en minuscules
             et en enlevant toute ponctuation
@@ -247,26 +238,27 @@ class FrenchLinguist:
         for c in string.punctuation+"«»":
             propre=propre.replace(c," ")
         return propre
-	
+
     def phraseEnchassee(self,input):
-	    
-	input.replace("M.","M") # pour éviter qu'on coupe après M. quand on divise l'input en phrases
-	phrases = input.split(".")
-	
-	bonnePhrase = self.choisirBonnePhrase(phrases)
-	phraseSplit = (self.nettoyerTexte(bonnePhrase)).split()
 
-	# enlever des mots bizarre devant :
-	while len(phraseSplit)>1 and phraseSplit[0] in self.motsPasApresQue: phraseSplit.pop(0)
-	phraseRemaniee = " ".join(self.changePersonne(phraseSplit))
-	if self.dic.contientVerbe(phraseSplit):
-		return self.beautifier( " que "+phraseRemaniee+" ?")
-	else :
-		return self.beautifier( " '"+phraseRemaniee+"' ?")
+        input.replace("M.","M") # pour éviter qu'on coupe après M. quand on divise l'input en phrases
+        phrases = input.split(".")
 
-        
-        
-#f = FrenchLinguist()  
-#print f.imprime("qsdf le éee")
-#print f.decontracte("j'adore j'évite j'y vais")
-#print "qsdf"
+        bonnePhrase = self.choisirBonnePhrase(phrases)
+        phraseSplit = (self.nettoyerTexte(bonnePhrase)).split()
+
+        # enlever des mots bizarre devant :
+        while len(phraseSplit) > 1 and phraseSplit[0] in self.motsPasApresQue:
+            phraseSplit.pop(0)
+        phraseRemaniee = " ".join(self.changePersonne(phraseSplit))
+        if FrenchLex.objects.filter(form=phraseSplit).exists():
+            return self.beautifier( " que "+phraseRemaniee+" ?")
+        else:
+            return self.beautifier( " '"+phraseRemaniee+"' ?")
+
+
+if __name__ == '__main__':
+    f = FrenchLinguist()
+    print(f.imprime("qsdf le éee"))
+    print(f.decontracte("j'adore j'évite j'y vais"))
+

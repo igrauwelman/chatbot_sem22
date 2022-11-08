@@ -16,7 +16,7 @@ def find_active_bots(request):
     # bots have to be installed in the "bots" directory
     # check all subdirectories there whether they are valid bot codes and register them
     # and deactivate missing or corrupt ones
-    botdirs = [ f.name for f in os.scandir('bots') if f.is_dir() ]
+    botdirs = [f.name for f in os.scandir('bots') if f.is_dir()]
     for botdir in botdirs:
         try:
             botmodule = importlib.import_module(f"bots.{botdir}.bot")
@@ -29,6 +29,7 @@ def find_active_bots(request):
                     bot.save()
                 try:
                     deactivate.remove(name)  # remove active bot from deactivation list
+                    messages.info(request, f"Bot {name} wurde deaktiviert.")
                 except ValueError:  # new bot
                     messages.info(request, f"Bot {name} wurde wieder aktiviert.")
             except Bot.DoesNotExist:
@@ -56,6 +57,18 @@ def find_active_bots(request):
         bot.save()
         messages.info(request, f"Bot {name} wurde deaktiviert.")
 
+class RestartChat(LoginRequiredMixin, View):
+
+    def get(self, request, chatid):
+
+        try:
+            chatsession = ChatSession.objects.get(pk=chatid, user=request.user)
+        except ChatSession.DoesNotExist:
+            return HttpResponseBadRequest(f"Chat session #{chatid} doest not exist for user {request.user.username}")
+
+        chatsession.delete()
+        return redirect("index")
+
 
 class Index(LoginRequiredMixin, View):
     """The main view. Simply shows chat for now."""
@@ -74,6 +87,8 @@ class Index(LoginRequiredMixin, View):
         botmodule = importlib.import_module(chatsession.bot.classpath)
         botobject = botmodule.Bot()
         ChatMessage.objects.create(user_message=False, session=chatsession, content=botobject.chat(content, chatsession))
+
+        chatsession.save()  # force saving changed session
 
         # show chat
         return redirect('index_chatid', chatid=chatsession.pk)
