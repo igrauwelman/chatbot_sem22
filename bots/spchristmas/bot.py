@@ -1,6 +1,6 @@
 class Bot:
 
-    name = 'SpChristmas'
+    name = 'ChristmasBot'
     # avatar = 'avatar/perroquet.png'
 
     # def welcome(self):
