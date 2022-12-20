@@ -8,6 +8,17 @@ class Bot(models.Model):
     avatar = models.CharField(max_length=1024, null=True)
     active = models.BooleanField(default=True)
 
+class BooleanAttribute(models.Model):
+    name = models.CharField(max_length=64, null=False, unique=True)
+    STATUS_CHOICES = (('u', 'unknown'), ('ip','inProgress'), ('f','finished'))
+    status = models.CharField(max_length=32, choices=STATUS_CHOICES)
+    value = models.BooleanField(default=None)
+
+class StringAttribute(models.Model):
+    name = models.CharField(max_length=64, null=False, unique=True, default=None)
+    STATUS_CHOICES = (('u', 'unknown'), ('ip','inProgress'), ('f','finished'))
+    status = models.CharField(max_length=32, choices=STATUS_CHOICES)
+    value = models.CharField(max_length=64, null=False, default=None)
 
 class ChatSession(models.Model):
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
