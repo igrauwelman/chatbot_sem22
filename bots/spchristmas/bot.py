@@ -1,12 +1,11 @@
 import random
 import time
+import re
 
 class BooleanAttribute():
-    # status = None
     value = None
 
 class StringAttribute():
-    # status = None
     value = None
 
 class Student():
@@ -23,8 +22,6 @@ attributes = ['name', 'religious', 'gifts', 'tree', 'food', 'weather']
 name_keywords = ['llamo', 'nombre']
 response_keywords = ['sí', 'no']
 food_keywords = ['come', 'como', 'comemos']
-# question_keywords = ['et tú', 'y tú']
-# category_keywords = ['regalos', 'árbol de Navidad', 'árbol', 'comistéis']
 # negation_keywords = ['no', 'nada', 'tampoco', 'nunca', 'ni']
 bot_should_prompt_question = True
 current_attribute = None
@@ -58,11 +55,12 @@ class Bot:
             return self.endMessage
         else:
             current_attribute = attributes[random.randint(0, len(attributes) - 1)]
-            # TODO: add here questions the bot could ask to get info about the attribute, so that one 
+            # TODO: add questions the bot could ask to get info about the attribute, so that one 
             # of the questions can be returned here as a string to be able to concatenate it to
             # the bot's response to the student's answer regarding the previous attribute
             return current_attribute
 
+    # TODO: differentiate between Spanish and Mexican bot in responses
     def chat(self, last_user_message, session):
         global current_attribute
 
@@ -71,17 +69,13 @@ class Bot:
         #     time.sleep(random.randint(10,20))
 
         # response delay for authenticity
-        time.sleep(3)
+        time.sleep(random.randint(1,5))
         
+        # remove punctuation
+        last_user_message = re.sub(r'[^\w\s]', '', last_user_message)
+
+        # split message into word chunks
         splitMessage = last_user_message.split()
-        # remove punctuation TODO! Does not work yet
-        for string in splitMessage:
-            string.replace(".", " ")
-            string.replace(",", " ")
-            string.replace("!", " ")
-            string.replace("¡", " ")
-            string.replace("?", " ")
-            string.replace("¿", " ")
 
         # NAME
         for keyword in name_keywords:
@@ -151,6 +145,8 @@ class Bot:
                     else:
                         return "??"
 
+        # TODO: do the same for negation keywords --> check current attribute to find out what the student "negates"
+
         for keyword in food_keywords:
             for index, string in enumerate(splitMessage):
                 string.lower()
@@ -158,6 +154,7 @@ class Bot:
                     # save what student mentioned about what they ate
                     current_attribute = self.update_attribute_todo_and_choose_next('food')
                     return "¡Suena delicioso! En México, la mayoría de las familias come pavo con ensalada de manzana y pescado en salsa de tomate en Nochebuena, pero muchas otras familias también comen su propia comida tradicional, como tacos, enchiladas, quesadillas y burritos con guacamole. Y siempre hay salsa picante. + question about " + current_attribute
+
 
         return "..."
 
