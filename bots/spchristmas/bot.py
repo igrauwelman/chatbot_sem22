@@ -63,7 +63,10 @@ class Bot:
     def update_attribute_todo_list(self, attribute_to_be_removed):
         global attributes
 
-        attributes.remove(attribute_to_be_removed)
+        for attribute in attributes:
+            if attribute == attribute_to_be_removed:
+                attributes.remove(attribute_to_be_removed)
+                break
 
     def choose_next_attribute_and_question(self):
         global current_attribute
@@ -128,6 +131,8 @@ class Bot:
                 for keyword in gift_keywords:
                     for index, string in enumerate(splitMessage):
                         if string == keyword:
+                            if self.check_whether_info_already_given('gifts'):
+                                bot_response = self.generate_response('Haha, I already told you: Tenía la figura en mi pieza este año. + hier einfügen was Alma als Geschenk bekommen hat (Geld, Videospiel, ...)', None)
                             current_attribute = student.gifts
                             bot_response = self.generate_response_to_user_question('La entrega de regalos se celebra en España el 6 de enero. Es el día de los Reyes Magos. Traen regalos a los niños. Tradicionalmente hay un "Resoco de Reyes". Es un pastel en forma de anillo con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día. ¡Tenía la figura en mi pieza este año! + hier einfügen was Alma als Geschenk bekommen hat (Geld, Videospiel, ...)', current_attribute)
                             bot_infos.remove('gifts')
