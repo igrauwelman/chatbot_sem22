@@ -29,14 +29,12 @@ current_attribute = None
 next_question = None
 
 # TODO: different responses to choose from for a given attribute? (similar to questions)
+# TODO: let the bot wait if the student asks a question --> what if the student does not send a message? (chat function will only be called if user sends a message)
 class Bot:
-    name = random.choice(['José', 'Alma'])
-    if name == 'José':
-        country = 'México'
-    elif name == 'Alma':
-        country = 'España'
+    name = 'Alma'
+    country = 'España'
     avatar = 'avatar/perroquet.png'
-    defaultResponse = "Lo siento, no entiendo lo que me quieres decir... ¿Lo podrías repetir, por favor?"
+    defaultResponse = "Lo siento, no entiendo. ¿Puede repetir eso de nuevo?"
     endMessage = "It was so nice learning about how you spent the holidays!"
     age = 15
 
@@ -111,20 +109,20 @@ class Bot:
                         if current_attribute == student.religious:
                             student.religious.value = True
                             next_question = self.update_attribute_todo_and_choose_next(student.religious)
-                            return "Oh, I am curious how you celebrate christmas in your culture! En México, las familias preparan una gran celebración para toda la familia para Nochebuena. Y hay muchos juegos para niños, como golpear piñatas rellenas con frutas, dulces y regalos pequeños. " + next_question
+                            return "Oh, I am curious how you celebrate christmas in your culture! En la Noche Buena, el 24 de diciembre, toda la familia se reúne para cenar, pero la Navidad en España comienza el 22 de diciembre con el sorteo de la lotería, lo llamamos 'El Gordo' de Navidad porque el premio principal es muy grande. Todo el mundo participa y muchos ganan algo, por eso nos reunimos en las calles para celebrar juntos las ganancias. " + next_question
                         elif current_attribute == student.gifts:
                             student.got_gifts.value = True
                             student.gifts.value = 'GIFTS THE STUDENT MENTIONED'
                             next_question = self.update_attribute_todo_and_choose_next(student.gifts)
-                            return "¡Qué padre! Los regalos sólo se desenvuelven a medianoche en México, lo que siempre hace más felices a los niños. " + next_question
+                            return "¡Cómo mola!  La entrega de regalos se celebra en España el 6 de enero. Es el día de los Reyes Magos. Traen regalos a los niños. Tradicionalmente hay un 'Resoco de Reyes'. Es un pastel en forma de anillo con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día. " + next_question
                         elif current_attribute == student.tree:
                             student.tree.value = True
                             next_question = self.update_attribute_todo_and_choose_next(student.tree)
-                            return "Eso suena genial. Antes en México no se ponían árboles de Navidad, fue hasta que nos enteramos por los europeos que nos pareció una gran idea y ahora ¡también lo hacemos! Mucho más importante para nosotros es la cuna de Navidad, que recrea el nacimiento de Jesús " + next_question
+                            return "Eso suena genial. No tenemos árbol de Navidad, pero ponemos un belén con la familia y lo decoramos. Pero sé que algunos de mis amigos también tienen ya un árbol de Navidad. " + next_question
                         elif current_attribute == student.weather:
                             student.weather.value = True
                             next_question = self.update_attribute_todo_and_choose_next(student.weather)
-                            return "¡Wow, me encantaría ver eso! Mucha gente pasó las Navidades en la playa porque hacía mucho calor. Entonces, ¡el árbol de Navidad está hecho con una palmera! " + next_question
+                            return "¡Wow, me encantaría ver eso! Vivo en Málaga, que está en el mar Mediterráneo. En diciembre tenemos unos 16 grados, por eso aquí no nieva. Pero a dos horas estamos en Sierra Nevada, hay nieve en invierno y podemos esquiar, eso me encanta. " + next_question
                     elif keyword == str('no'):
                         if current_attribute == student.religious:
                             student.religious.value = False
@@ -135,15 +133,15 @@ class Bot:
                             student.got_gifts.value = False
                             student.gifts.value = 'none'
                             next_question = self.update_attribute_todo_and_choose_next(student.gifts)
-                            return "Some response about how gifts are not important. Los regalos sólo se desenvuelven a medianoche en México, lo que siempre hace más felices a los niños. " + next_question
+                            return "Some response about how gifts are not important. La entrega de regalos se celebra en España el 6 de enero. Es el día de los Reyes Magos. Traen regalos a los niños. Tradicionalmente hay un 'Resoco de Reyes'. Es un pastel en forma de anillo con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día. " + next_question
                         elif current_attribute == student.tree:
                             student.tree.value = False
                             next_question = self.update_attribute_todo_and_choose_next(student.tree)
-                            return "No importa, no todas las familias tienen árbol de Navidad! Antes en México no se ponían árboles de Navidad, fue hasta que nos enteramos por los europeos que nos pareció una gran idea y ahora ¡también lo hacemos! Mucho más importante para nosotros es la cuna de Navidad, que recrea el nacimiento de Jesús " + next_question
+                            return "No importa, no todas las familias tienen árbol de Navidad! Yo tampoco, pero ponemos un belén con la familia y lo decoramos. Pero sé que algunos de mis amigos también tienen ya un árbol de Navidad. " + next_question
                         elif current_attribute == student.weather:
                             student.weather.value = False
                             next_question = self.update_attribute_todo_and_choose_next(student.weather)
-                            return "¡Tampoco con nosotros! En nuestro país, mucha gente pasó las Navidades en la playa, ¡porque hacía mucho calor! Entonces, ¡el árbol de Navidad está hecho con una palmera! " + next_question
+                            return "¡Tampoco con nosotros! Vivo en Málaga, que está en el mar Mediterráneo. En diciembre tenemos unos 16 grados, por eso aquí no nieva. Pero a dos horas estamos en Sierra Nevada, hay nieve en invierno y podemos esquiar, eso me encanta. " + next_question
                     else:
                         return "??"
 
@@ -155,7 +153,7 @@ class Bot:
                 if string == keyword:
                     # TODO: save what student mentioned about what they ate
                     next_question = self.update_attribute_todo_and_choose_next(student.food)
-                    return "¡Suena delicioso! En México, la mayoría de las familias come pavo con ensalada de manzana y pescado en salsa de tomate en Nochebuena, pero muchas otras familias también comen su propia comida tradicional, como tacos, enchiladas, quesadillas y burritos con guacamole. Y siempre hay salsa picante. " + next_question
+                    return "¡Suena delicioso! Como entrante comemos tapas de jamón o queso, por ejemplo. Luego tomamos una sopa, seguida de pescado frito o carne, que me gusta muchísimo. Pero lo que más espero es el postre, por ejemplo galletas como polvorones o mantecados, pero mi dulce favorito es el turrón. Es una especialidad navideña española y lo comemos entre o después de la comida festiva. Se compone de almendras tostadas, azúcar, clara de huevo y miel. A veces se añade fruta confitada, chocolate o mazapán. " + next_question
 
         for keyword in weather_keywords:
             for index, string in enumerate(splitMessage):
