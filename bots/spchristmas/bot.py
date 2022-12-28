@@ -25,11 +25,11 @@ bot_infos = ['gifts', 'tree', 'food', 'weather']
 # keywords
 # TODO: also add words like 'arbol' for 'árbol' etc?
 name_keywords = ['llamo', 'nombre', 'soy']
-response_keywords = ['sí', 'no']
-food_keywords = ['come', 'como', 'comemos', 'comiste', 'comistéis', 'comer']
-weather_keywords = ['nieve', 'sol', 'fría', 'frio', 'frío', 'cálida', 'cálido', 'lluvia', 'lloviendo', 'lluvioso', 'tiempo']
-gift_keywords = ['regalos', 'regalo', 'regalaron', 'tengo', 'recibí']
-tree_keywords = ['árbol', 'decoras', 'decora', 'adornos', 'decoración']
+response_keywords = ['sí', 'si', 'no']
+food_keywords = ['come', 'como', 'comemos', 'comiste', 'comistéis', 'comer', 'comisteis', 'comimos']
+weather_keywords = ['nieve', 'sol', 'fría', 'fria', 'frio', 'frío', 'cálida', 'calida', 'cálido', 'calido', 'lluvia', 'lloviendo', 'lluvioso', 'tiempo']
+gift_keywords = ['regalos', 'regalo', 'regalaron', 'tengo', 'recibí', 'recibi']
+tree_keywords = ['árbol', 'arbol', 'decoras', 'decora', 'adornos', 'decoración', 'decoracion']
 # TODO: negation_keywords = ['no', 'nada', 'tampoco', 'nunca', 'ni', 'ningún', 'ninguna', 'ninguno']
 
 # variables
@@ -128,6 +128,13 @@ class Bot:
         global bot_infos
         global reaction
 
+        # randomly select whether bot should prompt a question after reacting to user message
+        bot_should_prompt_question = random.choice([True, False])
+
+        # response delay for authenticity
+        # check how many characters are in the response and multiply with millisecond for delay
+        time.sleep(random.randint(3,5))
+        
         # remove punctuation
         last_user_message_cleaned = re.sub(r'[^\w\s]', '', last_user_message)
 
@@ -135,12 +142,12 @@ class Bot:
         splitMessage = last_user_message_cleaned.split()
 
         # check whether user asked back
-        if last_user_message.__contains__('tú?'):
+        if last_user_message.__contains__('tú?') or last_user_message.__contains__('tu?'):
             for keyword in response_keywords:
                 for index, string in enumerate(splitMessage):
                     string = string.lower()
                     if string == keyword:
-                        if keyword == str('sí'):
+                        if keyword == str('sí') or keyword == str('si'):
                             if current_attribute == student.religious:
                                 student.religious.value = True
                                 bot_response = self.generate_response('I celebrated Christmas, too! En la Noche Buena, el 24 de diciembre, toda la familia se reúne para cenar, pero la Navidad en España comienza el 22 de diciembre con el sorteo de la lotería, lo llamamos "El Gordo" de Navidad porque el premio principal es muy grande. Todo el mundo participa y muchos ganan algo, por eso nos reunimos en las calles para celebrar juntos las ganancias.', student.religious)
@@ -305,19 +312,6 @@ class Bot:
                 # bot_response = self.generate_response('', current_attribute)
                 # return 'user did not ask a question' + ' ' + bot_response
                 # continue with code below
-        
-        # randomly select whether bot should prompt a question after reacting to user message
-        bot_should_prompt_question = random.choice([True, False])
-
-        # response delay for authenticity
-        # check how many characters are in the response and multiply with millisecond for delay
-        time.sleep(random.randint(3,5))
-        
-        # remove punctuation
-        last_user_message = re.sub(r'[^\w\s]', '', last_user_message)
-
-        # split message into word chunks
-        splitMessage = last_user_message.split()
 
         # NAME
         # TODO: if only one word is returned this must be the name
@@ -345,7 +339,7 @@ class Bot:
             for index, string in enumerate(splitMessage):
                 string = string.lower()
                 if string == keyword:
-                    if keyword == str('sí'):
+                    if keyword == str('sí') or keyword == str('si'):
                         if current_attribute == student.religious:
                             student.religious.value = True
                             bot_response = self.generate_response('Oh, I am curious how you celebrate christmas in your culture! En la Noche Buena, el 24 de diciembre, toda la familia se reúne para cenar, pero la Navidad en España comienza el 22 de diciembre con el sorteo de la lotería, lo llamamos "El Gordo" de Navidad porque el premio principal es muy grande. Todo el mundo participa y muchos ganan algo, por eso nos reunimos en las calles para celebrar juntos las ganancias.', student.religious)
