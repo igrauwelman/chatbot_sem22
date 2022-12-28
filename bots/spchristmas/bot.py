@@ -314,6 +314,7 @@ class Bot:
                     else:
                         reaction = 'aha... Vivo en Málaga, que está en el mar Mediterráneo. En diciembre tenemos unos 16 grados, por eso aquí no nieva. Pero a dos horas estamos en Sierra Nevada, hay nieve en invierno y podemos esquiar, eso me encanta.'
                     bot_response = self.generate_response(reaction, student.weather)
+                    return bot_response
         
         # GIFTS
         for keyword in gift_keywords:
@@ -326,6 +327,7 @@ class Bot:
                     else:
                         reaction = 'aha... La entrega de regalos se celebra en España el 6 de enero. Es el día de los Reyes Magos. Traen regalos a los niños. Tradicionalmente hay un "Resoco de Reyes". Es un pastel en forma de anillo con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día.'
                     bot_response = self.generate_response(reaction, student.weather)
+                    return bot_response
 
 
         # fallback response
