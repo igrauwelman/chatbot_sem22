@@ -119,6 +119,15 @@ class Bot:
         else:
             return None
 
+    # if attribute is still in attributes, the user did not talk about the attribute yet
+    def check_whether_attribute_already_finished(self, attr):
+        global attributes
+
+        for a in attributes:
+            if a == attr:
+                return False
+        return True
+
     # remove finished attribute
     def update_attribute_todo_list(self, attribute_to_be_removed):
         global attributes
@@ -146,23 +155,28 @@ class Bot:
         global next_question
         global attributes
         global bot_should_prompt_question 
+        global response_dict
 
-        if bot_should_prompt_question:
-            if current_attr:
-                self.update_attribute_todo_list(current_attr)
-            next_question = self.choose_next_attribute_and_question()
-            return  response + ' ' + next_question
-        else:
-            if current_attr:
-                self.update_attribute_todo_list(current_attr)
-            return response
+        if current_attr:
+            self.update_attribute_todo_list(current_attr)
+            if bot_should_prompt_question:
+                next_question = self.choose_next_attribute_and_question()
+                return response + ' ' + next_question
+            else:
+                return response
         
-    # generate direct response to a user question (bot should ask back)
+    # generate direct response to an unprompted user question (bot should ask back if attribute not finished yet)
     def generate_response_to_user_question(self, response, current_attr):
         global next_question
+        global bot_should_prompt_question
 
-        next_question = random.choice(["¿Y tú?", current_attr.questions[random.randint(0, len(current_attribute.questions) - 1)]])
-        return  response + ' ' + next_question
+        if self.check_whether_attribute_already_finished(current_attr):
+            if bot_should_prompt_question:
+                next_question = self.choose_next_attribute_and_question()
+                return response + ' ' + next_question
+            return response
+        next_question = random.choice(["¿Y tú?", current_attr.questions[random.randint(0, len(current_attr.questions) - 1)]])
+        return response + ' ' + next_question
 
     # if info is still in bot_infos, the info was not given to the user yet
     def check_whether_info_already_given(self, info):
@@ -188,8 +202,7 @@ class Bot:
         global response_dict
 
         # randomly select whether bot should prompt a question after reacting to user message
-        # bot_should_prompt_question = random.choice([True, False])
-        bot_should_prompt_question = False 
+        bot_should_prompt_question = random.choice([True, False])
         
         # remove punctuation
         last_user_message_cleaned = re.sub(r'[^\w\s]', '', last_user_message)
@@ -327,75 +340,77 @@ class Bot:
 
         # TODO: what to do if student does not type anything?
         # if bot waited for student to type a message, process the message to find out what they asked a question about
-        if bot_should_prompt_question == False:
-            # check if user asked a question
-            if last_user_message.__contains__("?"):
-                # check if user asked about gifts
-                for keyword in gift_keywords:
-                    keyword.lower()
-                    for index, string in enumerate(splitMessage):
-                        string = string.lower()
-                        if string == keyword:
-                            current_attribute = student.gifts
-                            if self.check_whether_info_already_given('gifts'):
-                                bot_response = self.generate_response('Haha, I already told you: Tenía la figura en mi pieza este año. + hier einfügen was Alma als Geschenk bekommen hat (Geld, Videospiel, ...)', None)
-                                self.delay_response(bot_response)
-                                return bot_response
-                            bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts'])+ 'hier einfügen was Alma als Geschenk bekommen hat (Geld, Videospiel, ...)', current_attribute)
-                            bot_infos.remove('gifts')
+        # if bot_should_prompt_question == False:
+        # check if user asked a question
+        if last_user_message.__contains__("?"):
+            # check if user asked about gifts
+            for keyword in gift_keywords:
+                keyword.lower()
+                for index, string in enumerate(splitMessage):
+                    string = string.lower()
+                    if string == keyword:
+                        current_attribute = student.gifts
+                        if self.check_whether_info_already_given('gifts'):
+                            bot_response = self.generate_response_to_user_question('Haha, I already told you: Tenía la figura en mi pieza este año. + hier einfügen was Alma als Geschenk bekommen hat (Geld, Videospiel, ...)', student.gifts)
                             self.delay_response(bot_response)
-                            return   bot_response
+                            return bot_response
+                        bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts'])+ 'hier einfügen was Alma als Geschenk bekommen hat (Geld, Videospiel, ...)', current_attribute)
+                        bot_infos.remove('gifts')
+                        self.delay_response(bot_response)
+                        return   bot_response
 
-                # check if user asked about tree/decoration
-                for keyword in tree_keywords:
-                    keyword.lower()
-                    for index, string in enumerate(splitMessage):
-                        string = string.lower()
-                        if string == keyword:
-                            current_attribute = student.tree
-                            if self.check_whether_info_already_given('tree'):
-                                bot_response = self.generate_response('Haha, I already told you that we did not had a tree', None)
-                                self.delay_response(bot_response)
-                                return bot_response
-                            bot_response = self.generate_response(random.choice(response_dict['tree']), current_attribute)
-                            bot_infos.remove('tree')
+            # check if user asked about tree/decoration
+            for keyword in tree_keywords:
+                keyword.lower()
+                for index, string in enumerate(splitMessage):
+                    string = string.lower()
+                    if string == keyword:
+                        current_attribute = student.tree
+                        if self.check_whether_info_already_given('tree'):
+                            bot_response = self.generate_response_to_user_question('Haha, I already told you that we did not had a tree', student.tree)
                             self.delay_response(bot_response)
-                            return  bot_response
+                            return bot_response
+                        bot_response = self.generate_response_to_user_question(random.choice(response_dict['tree']), current_attribute)
+                        bot_infos.remove('tree')
+                        self.delay_response(bot_response)
+                        return  bot_response
 
-                # check if user asked about food
-                for keyword in food_keywords:
-                    keyword.lower()
-                    for index, string in enumerate(splitMessage):
-                        string = string.lower()
-                        if string == keyword:
-                            current_attribute = student.food
-                            if self.check_whether_info_already_given('food'):
-                                bot_response = self.generate_response('Haha, I already told you what we ate: blabla', None)
-                                self.delay_response(bot_response)
-                                return bot_response
-                            bot_response = self.generate_response(random.choice(response_dict["food"]), current_attribute)
-                            bot_infos.remove('food')
+            # check if user asked about food
+            for keyword in food_keywords:
+                keyword.lower()
+                for index, string in enumerate(splitMessage):
+                    string = string.lower()
+                    if string == keyword:
+                        current_attribute = student.food
+                        if self.check_whether_info_already_given('food'):
+                            bot_response = self.generate_response_to_user_question('Haha, I already told you what we ate: blabla', student.food)
                             self.delay_response(bot_response)
-                            return   bot_response
+                            return bot_response
+                        bot_response = self.generate_response_to_user_question(random.choice(response_dict["food"]), current_attribute)
+                        bot_infos.remove('food')
+                        self.delay_response(bot_response)
+                        return   bot_response
 
-                # check if user asked about weather
-                for keyword in weather_keywords:
-                    keyword.lower()
-                    for index, string in enumerate(splitMessage):
-                        string = string.lower()
-                        if string == keyword:
-                            current_attribute = student.weather
-                            if self.check_whether_info_already_given('weather'):
-                                bot_response = self.generate_response('Haha, I already told you that it was warm here in Spain', None)
-                                self.delay_response(bot_response)
-                                return bot_response
-                            bot_response = self.generate_response(random.choice(response_dict['weather']), current_attribute)
-                            bot_infos.remove('weather')
+            # check if user asked about weather
+            for keyword in weather_keywords:
+                keyword.lower()
+                for index, string in enumerate(splitMessage):
+                    string = string.lower()
+                    if string == keyword:
+                        current_attribute = student.weather
+                        if self.check_whether_info_already_given('weather'):
+                            bot_response = self.generate_response_to_user_question('Haha, I already told you that it was warm here in Spain', student.weather)
                             self.delay_response(bot_response)
-                            return   bot_response
+                            return bot_response
+                        bot_response = self.generate_response_to_user_question(random.choice(response_dict['weather']), current_attribute)
+                        bot_infos.remove('weather')
+                        self.delay_response(bot_response)
+                        return   bot_response
 
-                # fallback response
-                return  'user asked a question'
+            # fallback response
+            return  'user asked a question'
+        else:
+            bot_should_prompt_question = True
 
         # NAME
         # TODO: if only one word is returned this must be the name
@@ -468,7 +483,7 @@ class Bot:
                         if current_attribute == student.religious:
                             student.religious.value = False
                             bot_response = self.generate_response('Si no celebras las Navidades, ¿hiciste algo más especial durante las vacaciones?', student.religious)
-                            self.delay_response(bot_response)
+                            self.delay_response(bot_response) 
                             return bot_response
                             # TODO: how to handle user that does not celebrate christmas?
                         elif current_attribute == student.gifts:
