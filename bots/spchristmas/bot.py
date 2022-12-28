@@ -1,6 +1,7 @@
 import random
 import time
 import re
+import inspect
 
 class Attribute():
     def __init__(self, n, v, q):
@@ -59,12 +60,12 @@ class Bot:
         if keyword == 'llamo' or keyword == 'soy':
             # "Me llamo NAME"
             # 'Yo soy NAME'
-            return splitMessage[index + 1]
+            return   splitMessage[index + 1]
         elif keyword == 'nombre':
             # "Mi nombre es NAME"
-            return splitMessage[index + 2]
+            return   splitMessage[index + 2]
         else:
-            return None
+            return   None
 
     # remove finished attribute
     def update_attribute_todo_list(self, attribute_to_be_removed):
@@ -84,9 +85,9 @@ class Bot:
 
         if attributes:
             current_attribute = attributes[random.randint(0, len(attributes) - 1)]
-            return current_attribute.questions[random.randint(0, len(current_attribute.questions) - 1)]
+            return   '(' + current_attribute.name + ') ' + current_attribute.questions[random.randint(0, len(current_attribute.questions) - 1)]
         else:
-            return self.endMessage
+            return   self.endMessage
     
     # generate response based on bot_should_prompt_question
     def generate_response(self, response, current_attr):
@@ -98,18 +99,18 @@ class Bot:
             if current_attr:
                 self.update_attribute_todo_list(current_attr)
             next_question = self.choose_next_attribute_and_question()
-            return response + ' ' + next_question
+            return   response + ' ' + next_question
         else:
             if current_attr:
                 self.update_attribute_todo_list(current_attr)
-            return '(student should write a message) ' + response
+            return   '(student should write a message) ' + response
         
     # generate direct response to a user question (bot should ask back)
     def generate_response_to_user_question(self, response, current_attr):
         global next_question
 
         next_question = random.choice(["¿Y tú?", current_attr.questions[random.randint(0, len(current_attribute.questions) - 1)]])
-        return response + ' ' + next_question
+        return   response + ' ' + next_question
 
     # if info is still in bot_infos, the info was not given to the user yet
     def check_whether_info_already_given(self, info):
@@ -120,6 +121,11 @@ class Bot:
                 return False
         return True
 
+    # response delay for authenticity
+    def delay_response(self, bot_message):
+        delay = len(bot_message) * 0.01
+        time.sleep(delay)
+
     def chat(self, last_user_message, session):
         global current_attribute
         global next_question
@@ -129,11 +135,8 @@ class Bot:
         global reaction
 
         # randomly select whether bot should prompt a question after reacting to user message
-        bot_should_prompt_question = random.choice([True, False])
-
-        # response delay for authenticity
-        # check how many characters are in the response and multiply with millisecond for delay
-        time.sleep(random.randint(3,5))
+        # bot_should_prompt_question = random.choice([True, False])
+        bot_should_prompt_question = False 
         
         # remove punctuation
         last_user_message_cleaned = re.sub(r'[^\w\s]', '', last_user_message)
@@ -144,6 +147,7 @@ class Bot:
         # check whether user asked back
         if last_user_message.__contains__('tú?') or last_user_message.__contains__('tu?'):
             for keyword in response_keywords:
+                keyword.lower()
                 for index, string in enumerate(splitMessage):
                     string = string.lower()
                     if string == keyword:
@@ -151,7 +155,8 @@ class Bot:
                             if current_attribute == student.religious:
                                 student.religious.value = True
                                 bot_response = self.generate_response('I celebrated Christmas, too! En la Noche Buena, el 24 de diciembre, toda la familia se reúne para cenar, pero la Navidad en España comienza el 22 de diciembre con el sorteo de la lotería, lo llamamos "El Gordo" de Navidad porque el premio principal es muy grande. Todo el mundo participa y muchos ganan algo, por eso nos reunimos en las calles para celebrar juntos las ganancias.', student.religious)
-                                return bot_response
+                                self.delay_response(bot_response)
+                                return   bot_response
                             elif current_attribute == student.gifts:
                                 student.got_gifts.value = True
                                 student.gifts.value = 'GIFTS THE STUDENT MENTIONED'
@@ -161,7 +166,8 @@ class Bot:
                                     reaction = '¡Cómo mola! I got gifts as well, la entrega de regalos se celebra en España el 6 de enero. Es el día de los Reyes Magos. Traen regalos a los niños. Tradicionalmente hay un "Resoco de Reyes". Es un pastel en forma de anillo con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día.'
                                     bot_infos.remove('gifts')
                                 bot_response = self.generate_response(reaction, student.gifts)
-                                return bot_response
+                                self.delay_response(bot_response)
+                                return   bot_response
                             elif current_attribute == student.tree:
                                 student.tree.value = True
                                 if self.check_whether_info_already_given('tree'):
@@ -170,7 +176,8 @@ class Bot:
                                     reaction = 'Eso suena genial. No tenemos árbol de Navidad, pero ponemos un belén con la familia y lo decoramos. Pero sé que algunos de mis amigos también tienen ya un árbol de Navidad.'
                                     bot_infos.remove('tree')
                                 bot_response = self.generate_response(reaction, student.tree)
-                                return bot_response
+                                self.delay_response(bot_response)
+                                return   bot_response
                             elif current_attribute == student.weather:
                                 student.weather.value = True
                                 if self.check_whether_info_already_given('weather'):
@@ -179,11 +186,14 @@ class Bot:
                                     reaction = '¡Wow, me encantaría ver eso! Vivo en Málaga, que está en el mar Mediterráneo. En diciembre tenemos unos 16 grados, por eso aquí no nieva. Pero a dos horas estamos en Sierra Nevada, hay nieve en invierno y podemos esquiar, eso me encanta.'
                                     bot_infos.remove('weather')
                                 bot_response = self.generate_response(reaction, student.weather)
+                                self.delay_response(bot_response)
+                                return   bot_response
                         elif keyword == str('no'):
                             if current_attribute == student.religious:
                                 student.religious.value = False
                                 bot_response = self.generate_response('I do celebrate christmas! What do you normally do during the holiday season?', student.religious)
-                                return bot_response
+                                self.delay_response(bot_response)
+                                return   bot_response
                                 # next_question = self.update_attribute_todo_and_choose_next(student.religious)
                                 # return "Oh, what do you normally do during the holiday season?"
                                 # TODO: how to handle user that does not celebrate christmas?
@@ -196,7 +206,8 @@ class Bot:
                                     reaction = 'Some response about how gifts are not important. La entrega de regalos se celebra en España el 6 de enero. Es el día de los Reyes Magos. Traen regalos a los niños. Tradicionalmente hay un "Resoco de Reyes". Es un pastel en forma de anillo con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día.'
                                     bot_infos.remove('gifts')
                                 bot_response = self.generate_response(reaction, student.gifts)
-                                return bot_response
+                                self.delay_response(bot_response)
+                                return   bot_response
                             elif current_attribute == student.tree:
                                 student.tree.value = False
                                 if self.check_whether_info_already_given('tree'):
@@ -205,7 +216,8 @@ class Bot:
                                     reaction = 'No importa, no todas las familias tienen árbol de Navidad! Yo tampoco, pero ponemos un belén con la familia y lo decoramos. Pero sé que algunos de mis amigos también tienen ya un árbol de Navidad.'
                                     bot_infos.remove('tree')
                                 bot_response = self.generate_response(reaction, student.tree)
-                                return bot_response
+                                self.delay_response(bot_response)
+                                return   bot_response
                             elif current_attribute == student.weather:
                                 student.weather.value = False
                                 if self.check_whether_info_already_given('weather'):
@@ -214,10 +226,11 @@ class Bot:
                                     reaction = '¡Tampoco con nosotros! Vivo en Málaga, que está en el mar Mediterráneo. En diciembre tenemos unos 16 grados, por eso aquí no nieva. Pero a dos horas estamos en Sierra Nevada, hay nieve en invierno y podemos esquiar, eso me encanta.'
                                     bot_infos.remove('weather')
                                 bot_response = self.generate_response(reaction, student.weather)
-                                return bot_response
+                                self.delay_response(bot_response)
+                                return   bot_response
                         # fallback response
                         else:
-                            return "??"
+                            return   "??"
 
             if current_attribute == student.food:
                 if self.check_whether_info_already_given('food'):
@@ -226,10 +239,12 @@ class Bot:
                     reaction = '¡Suena delicioso! Como entrante comemos tapas de jamón o queso, por ejemplo. Luego tomamos una sopa, seguida de pescado frito o carne, que me gusta muchísimo. Pero lo que más espero es el postre, por ejemplo galletas como polvorones o mantecados, pero mi dulce favorito es el turrón. Es una especialidad navideña española y lo comemos entre o después de la comida festiva. Se compone de almendras tostadas, azúcar, clara de huevo y miel. A veces se añade fruta confitada, chocolate o mazapán.'
                     bot_infos.remove('food')
                 bot_response = self.generate_response(reaction, student.food)
-                return bot_response
+                self.delay_response(bot_response)
+                return   bot_response
 
             # WEATHER
             for keyword in weather_keywords:
+                keyword.lower()
                 for index, string in enumerate(splitMessage):
                     string.lower()
                     if string == keyword:
@@ -241,9 +256,11 @@ class Bot:
                             reaction = 'aha... Vivo en Málaga, que está en el mar Mediterráneo. En diciembre tenemos unos 16 grados, por eso aquí no nieva. Pero a dos horas estamos en Sierra Nevada, hay nieve en invierno y podemos esquiar, eso me encanta.'
                             bot_infos.remove('weather')
                         bot_response = self.generate_response(reaction, student.weather)
-                        return bot_response
+                        self.delay_response(bot_response)
+                        return   bot_response
             
             for keyword in gift_keywords:
+                keyword.lower()
                 for index, string in enumerate(splitMessage):
                     string.lower()
                     if string == keyword:
@@ -254,59 +271,66 @@ class Bot:
                             reaction = 'aha... La entrega de regalos se celebra en España el 6 de enero. Es el día de los Reyes Magos. Traen regalos a los niños. Tradicionalmente hay un "Resoco de Reyes". Es un pastel en forma de anillo con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día.'
                             bot_infos.remove('gifts')
                         bot_response = self.generate_response(reaction, student.gifts)
-                        return bot_response
+                        self.delay_response(bot_response)
+                        return   bot_response
 
         # TODO: what to do if student does not type anything?
         # if bot waited for student to type a message, process the message to find out what they asked a question about
         if bot_should_prompt_question == False:
             # check if user asked a question
             if last_user_message.__contains__("?"):
-                # remove punctuation
-                last_user_message = re.sub(r'[^\w\s]', '', last_user_message)
-
-                # split message into word chunks
-                splitMessage = last_user_message.split()
-
                 # check if user asked about gifts
                 for keyword in gift_keywords:
+                    keyword.lower()
                     for index, string in enumerate(splitMessage):
+                        string = string.lower()
                         if string == keyword:
                             if self.check_whether_info_already_given('gifts'):
                                 bot_response = self.generate_response('Haha, I already told you: Tenía la figura en mi pieza este año. + hier einfügen was Alma als Geschenk bekommen hat (Geld, Videospiel, ...)', None)
                             current_attribute = student.gifts
                             bot_response = self.generate_response_to_user_question('La entrega de regalos se celebra en España el 6 de enero. Es el día de los Reyes Magos. Traen regalos a los niños. Tradicionalmente hay un "Resoco de Reyes". Es un pastel en forma de anillo con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día. ¡Tenía la figura en mi pieza este año! + hier einfügen was Alma als Geschenk bekommen hat (Geld, Videospiel, ...)', current_attribute)
                             bot_infos.remove('gifts')
-                            return bot_response
+                            self.delay_response(bot_response)
+                            return   bot_response
 
                 # check if user asked about tree/decoration
                 for keyword in tree_keywords:
+                    keyword.lower()
                     for index, string in enumerate(splitMessage):
+                        string = string.lower()
                         if string == keyword:
                             current_attribute = student.tree
                             bot_response = self.generate_response('No tenemos árbol de Navidad, pero ponemos un belén con la familia y lo decoramos. Pero sé que algunos de mis amigos también tienen ya un árbol de Navidad.', current_attribute)
                             bot_infos.remove('tree')
-                            return bot_response
+                            self.delay_response(bot_response)
+                            return   bot_response
 
                 # check if user asked about food
                 for keyword in food_keywords:
+                    keyword.lower()
                     for index, string in enumerate(splitMessage):
+                        string = string.lower()
                         if string == keyword:
                             current_attribute = student.food
                             bot_response = self.generate_response('Como entrante comemos tapas de jamón o queso, por ejemplo. Luego tomamos una sopa, seguida de pescado frito o carne, que me gusta muchísimo. Pero lo que más espero es el postre, por ejemplo galletas como polvorones o mantecados, pero mi dulce favorito es el turrón. Es una especialidad navideña española y lo comemos entre o después de la comida festiva. Se compone de almendras tostadas, azúcar, clara de huevo y miel. A veces se añade fruta confitada, chocolate o mazapán.', current_attribute)
                             bot_infos.remove('food')
-                            return bot_response
+                            self.delay_response(bot_response)
+                            return   bot_response
 
                 # check if user asked about weather
                 for keyword in weather_keywords:
+                    keyword.lower()
                     for index, string in enumerate(splitMessage):
+                        string = string.lower()
                         if string == keyword:
                             current_attribute = student.weather
                             bot_response = self.generate_response('Vivo en Málaga, que está en el mar Mediterráneo. En diciembre tenemos unos 16 grados, por eso aquí no nieva. Pero a dos horas estamos en Sierra Nevada, hay nieve en invierno y podemos esquiar, eso me encanta.', current_attribute)
                             bot_infos.remove('weather')
-                            return bot_response
+                            self.delay_response(bot_response)
+                            return   bot_response
 
                 # fallback response
-                return 'user asked a question'
+                return  'user asked a question'
             else:
                 bot_should_prompt_question = True
                 # bot_response = self.generate_response('', current_attribute)
@@ -316,13 +340,14 @@ class Bot:
         # NAME
         # TODO: if only one word is returned this must be the name
         for keyword in name_keywords:
+            keyword.lower()
             for index, string in enumerate(splitMessage):
+                string = string.lower()
                 if string == keyword:
-                    # if student.name.status == str('finished'):
                     if student.name.value != None:
                         # TODO: check whether student changed their name ?
                         # alternatively, just say "Okay, NAME" and prompt the next question
-                        return "¡Lo sé, " + student.name.value + "! "
+                        return   "¡Lo sé, " + student.name.value + "! "
                     else:
                         current_attribute = student.name
                         student.name.value = self.process_user_name(keyword, index, splitMessage)
@@ -330,12 +355,14 @@ class Bot:
                             attributes.remove(student.name)
                             current_attribute = student.religious
                             bot_should_prompt_question = True
-                            return "¡Hola " + student.name.value + "! Hablemos de la vacaciones. ¿Celebras Navidad?"
+                            self.delay_response("¡Hola " + student.name.value + "! Hablemos de la vacaciones. ¿Celebras Navidad?")
+                            return   "¡Hola " + student.name.value + "! Hablemos de la vacaciones. ¿Celebras Navidad?"
                         else:
-                            return self.defaultResponse
+                            return   self.defaultResponse
             
         # RESPONSE KEYWORDS
         for keyword in response_keywords:
+            keyword.lower()
             for index, string in enumerate(splitMessage):
                 string = string.lower()
                 if string == keyword:
@@ -343,7 +370,8 @@ class Bot:
                         if current_attribute == student.religious:
                             student.religious.value = True
                             bot_response = self.generate_response('Oh, I am curious how you celebrate christmas in your culture! En la Noche Buena, el 24 de diciembre, toda la familia se reúne para cenar, pero la Navidad en España comienza el 22 de diciembre con el sorteo de la lotería, lo llamamos "El Gordo" de Navidad porque el premio principal es muy grande. Todo el mundo participa y muchos ganan algo, por eso nos reunimos en las calles para celebrar juntos las ganancias.', student.religious)
-                            return bot_response
+                            self.delay_response(bot_response)
+                            return   bot_response
                         elif current_attribute == student.gifts:
                             student.got_gifts.value = True
                             student.gifts.value = 'GIFTS THE STUDENT MENTIONED'
@@ -353,7 +381,8 @@ class Bot:
                                 reaction = '¡Cómo mola! La entrega de regalos se celebra en España el 6 de enero. Es el día de los Reyes Magos. Traen regalos a los niños. Tradicionalmente hay un "Resoco de Reyes". Es un pastel en forma de anillo con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día.'
                                 bot_infos.remove('gifts')
                             bot_response = self.generate_response(reaction, student.gifts)
-                            return bot_response
+                            self.delay_response(bot_response)
+                            return   bot_response
                         elif current_attribute == student.tree:
                             student.tree.value = True
                             if self.check_whether_info_already_given('tree'):
@@ -362,7 +391,8 @@ class Bot:
                                 reaction = 'Eso suena genial. No tenemos árbol de Navidad, pero ponemos un belén con la familia y lo decoramos. Pero sé que algunos de mis amigos también tienen ya un árbol de Navidad.'
                                 bot_infos.remove('tree')
                             bot_response = self.generate_response(reaction, student.tree)
-                            return bot_response
+                            self.delay_response(bot_response)
+                            return   bot_response
                         elif current_attribute == student.weather:
                             student.weather.value = True
                             if self.check_whether_info_already_given('weather'):
@@ -371,11 +401,14 @@ class Bot:
                                 reaction = '¡Wow, me encantaría ver eso! Vivo en Málaga, que está en el mar Mediterráneo. En diciembre tenemos unos 16 grados, por eso aquí no nieva. Pero a dos horas estamos en Sierra Nevada, hay nieve en invierno y podemos esquiar, eso me encanta.'
                                 bot_infos.remove('weather')
                             bot_response = self.generate_response(reaction, student.weather)
+                            self.delay_response(bot_response)
+                            return   bot_response
                     elif keyword == str('no'):
                         if current_attribute == student.religious:
                             student.religious.value = False
                             bot_response = self.generate_response('Oh, what do you normally do during the holiday season?', student.religious)
-                            return bot_response
+                            self.delay_response(bot_response)
+                            return   bot_response
                             # next_question = self.update_attribute_todo_and_choose_next(student.religious)
                             # return "Oh, what do you normally do during the holiday season?"
                             # TODO: how to handle user that does not celebrate christmas?
@@ -388,7 +421,8 @@ class Bot:
                                 reaction = 'Some response about how gifts are not important. La entrega de regalos se celebra en España el 6 de enero. Es el día de los Reyes Magos. Traen regalos a los niños. Tradicionalmente hay un "Resoco de Reyes". Es un pastel en forma de anillo con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día.'
                                 bot_infos.remove('gifts')
                             bot_response = self.generate_response(reaction, student.gifts)
-                            return bot_response
+                            self.delay_response(bot_response)
+                            return   bot_response
                         elif current_attribute == student.tree:
                             student.tree.value = False
                             if self.check_whether_info_already_given('tree'):
@@ -397,7 +431,8 @@ class Bot:
                                 reaction = 'No importa, no todas las familias tienen árbol de Navidad! Yo tampoco, pero ponemos un belén con la familia y lo decoramos. Pero sé que algunos de mis amigos también tienen ya un árbol de Navidad.'
                                 bot_infos.remove('tree')
                             bot_response = self.generate_response(reaction, student.tree)
-                            return bot_response
+                            self.delay_response(bot_response)
+                            return   bot_response
                         elif current_attribute == student.weather:
                             student.weather.value = False
                             if self.check_whether_info_already_given('weather'):
@@ -406,15 +441,17 @@ class Bot:
                                 reaction = '¡Tampoco con nosotros! Vivo en Málaga, que está en el mar Mediterráneo. En diciembre tenemos unos 16 grados, por eso aquí no nieva. Pero a dos horas estamos en Sierra Nevada, hay nieve en invierno y podemos esquiar, eso me encanta.'
                                 bot_infos.remove('weather')
                             bot_response = self.generate_response(reaction, student.weather)
-                            return bot_response
+                            self.delay_response(bot_response)
+                            return   bot_response
                     # fallback response
                     else:
-                        return "??"
+                        return   "??"
 
         # TODO: do the same for negation keywords --> check current attribute to find out what the student "negates"
 
         # FOOD
         for keyword in food_keywords:
+            keyword.lower()
             for index, string in enumerate(splitMessage):
                 string.lower()
                 if string == keyword:
@@ -425,10 +462,12 @@ class Bot:
                         reaction = '¡Suena delicioso! Como entrante comemos tapas de jamón o queso, por ejemplo. Luego tomamos una sopa, seguida de pescado frito o carne, que me gusta muchísimo. Pero lo que más espero es el postre, por ejemplo galletas como polvorones o mantecados, pero mi dulce favorito es el turrón. Es una especialidad navideña española y lo comemos entre o después de la comida festiva. Se compone de almendras tostadas, azúcar, clara de huevo y miel. A veces se añade fruta confitada, chocolate o mazapán.'
                         bot_infos.remove('food')
                     bot_response = self.generate_response(reaction, student.food)
-                    return bot_response
+                    self.delay_response(bot_response)
+                    return   bot_response
 
         # WEATHER
         for keyword in weather_keywords:
+            keyword.lower()
             for index, string in enumerate(splitMessage):
                 string.lower()
                 if string == keyword:
@@ -440,10 +479,12 @@ class Bot:
                         reaction = 'aha... Vivo en Málaga, que está en el mar Mediterráneo. En diciembre tenemos unos 16 grados, por eso aquí no nieva. Pero a dos horas estamos en Sierra Nevada, hay nieve en invierno y podemos esquiar, eso me encanta.'
                         bot_infos.remove('weather')
                     bot_response = self.generate_response(reaction, student.weather)
-                    return bot_response
+                    self.delay_response(bot_response)
+                    return   bot_response
         
         # GIFTS
         for keyword in gift_keywords:
+            keyword.lower()
             for index, string in enumerate(splitMessage):
                 string.lower()
                 if string == keyword:
@@ -454,11 +495,12 @@ class Bot:
                         reaction = 'aha... La entrega de regalos se celebra en España el 6 de enero. Es el día de los Reyes Magos. Traen regalos a los niños. Tradicionalmente hay un "Resoco de Reyes". Es un pastel en forma de anillo con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día.'
                         bot_infos.remove('gifts')
                     bot_response = self.generate_response(reaction, student.gifts)
-                    return bot_response
+                    self.delay_response(bot_response)
+                    return   bot_response
 
 
         # fallback response
-        return ' '
+        return   '\U0001F60A'
 
     def welcome(self):
         return "¡Hola! Me llamo " + self.name + " y soy de " + self.country + " ¿Cómo te llamas?"
