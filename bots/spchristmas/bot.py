@@ -30,7 +30,7 @@ food_keywords = ['come', 'como', 'comemos', 'comiste', 'comistéis', 'comer']
 weather_keywords = ['nieve', 'sol', 'fría', 'frio', 'frío', 'cálida', 'cálido', 'lluvia', 'lloviendo', 'lluvioso', 'tiempo']
 gift_keywords = ['regalos', 'regalo', 'regalaron', 'tengo', 'recibí']
 tree_keywords = ['árbol', 'decoras', 'decora', 'adornos', 'decoración']
-# TODO: negation_keywords = ['no', 'nada', 'tampoco', 'nunca', 'ni']
+# TODO: negation_keywords = ['no', 'nada', 'tampoco', 'nunca', 'ni', 'ningún', 'ninguna', 'ninguno']
 
 # variables
 # indicates if bot should ask a next question or if it should wait for the user to ask a question
@@ -189,6 +189,7 @@ class Bot:
         bot_should_prompt_question = random.choice([True, False])
 
         # response delay for authenticity
+        # check how many characters are in the response and multiply with millisecond for delay
         time.sleep(random.randint(3,5))
         
         # remove punctuation
@@ -198,6 +199,7 @@ class Bot:
         splitMessage = last_user_message.split()
 
         # NAME
+        # TODO: if only one word is returned this must be the name
         for keyword in name_keywords:
             for index, string in enumerate(splitMessage):
                 if string == keyword:
