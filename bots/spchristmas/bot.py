@@ -1,7 +1,6 @@
 import random
 import time
 import re
-import inspect
 
 class Attribute():
     def __init__(self, n, v, q):
@@ -48,7 +47,7 @@ reaction = None
 # dictionary with responses
 response_dict = {
     "introduction": ["""! Hablemos de las vacaciones. ¿Celebras Navidad?""",
-                    """! ¿Qué tal las vacaciones? ¿Celebras la Nacidad?"""],
+                    """! ¿Qué tal las vacaciones? ¿Celebras la Navidad?"""],
 
     "religious": ["""También celebré la Navidad. 
                     En la Noche Buena, el 24 de diciembre, toda la familia se reúne para cenar, 
@@ -99,7 +98,6 @@ response_dict = {
 
 }
 
-# TODO: different responses to choose from for a given attribute? (similar to questions)
 # TODO: let the bot wait if the student asks a question --> what if the student does not send a message? (chat function will only be called if user sends a message)
 class Bot:
     name = 'Alma'
@@ -112,7 +110,6 @@ class Bot:
     # return the user name or None in case of failure
     def process_user_name(self, keyword, index, splitMessage):
         for index, string in enumerate(splitMessage):
-            string = string.lower()
             if keyword == 'llamo' or keyword == 'soy':
                 # "Me llamo NAME"
                 # 'Yo soy NAME'
@@ -141,9 +138,9 @@ class Bot:
 
         if attributes:
             current_attribute = attributes[random.randint(0, len(attributes) - 1)]
-            return   '(' + current_attribute.name + ') ' + current_attribute.questions[random.randint(0, len(current_attribute.questions) - 1)]
+            return current_attribute.questions[random.randint(0, len(current_attribute.questions) - 1)]
         else:
-            return   self.endMessage
+            return self.endMessage
     
     # generate response based on bot_should_prompt_question
     def generate_response(self, response, current_attr):
@@ -155,18 +152,18 @@ class Bot:
             if current_attr:
                 self.update_attribute_todo_list(current_attr)
             next_question = self.choose_next_attribute_and_question()
-            return   response + ' ' + next_question
+            return  response + ' ' + next_question
         else:
             if current_attr:
                 self.update_attribute_todo_list(current_attr)
-            return   '(student should write a message) ' + response
+            return response
         
     # generate direct response to a user question (bot should ask back)
     def generate_response_to_user_question(self, response, current_attr):
         global next_question
 
         next_question = random.choice(["¿Y tú?", current_attr.questions[random.randint(0, len(current_attribute.questions) - 1)]])
-        return   response + ' ' + next_question
+        return  response + ' ' + next_question
 
     # if info is still in bot_infos, the info was not given to the user yet
     def check_whether_info_already_given(self, info):
@@ -223,7 +220,7 @@ class Bot:
                                     bot_infos.remove('gifts')
                                 bot_response = self.generate_response(reaction, student.gifts)
                                 self.delay_response(bot_response)
-                                return   bot_response
+                                return  bot_response
                             elif current_attribute == student.tree:
                                 student.tree.value = True
                                 if self.check_whether_info_already_given('tree'):
@@ -233,7 +230,7 @@ class Bot:
                                     bot_infos.remove('tree')
                                 bot_response = self.generate_response(reaction, student.tree)
                                 self.delay_response(bot_response)
-                                return   bot_response
+                                return  bot_response
                             elif current_attribute == student.weather:
                                 student.weather.value = True
                                 if self.check_whether_info_already_given('weather'):
@@ -243,15 +240,13 @@ class Bot:
                                     bot_infos.remove('weather')
                                 bot_response = self.generate_response(reaction, student.weather)
                                 self.delay_response(bot_response)
-                                return   bot_response
+                                return  bot_response
                         elif keyword == str('no'):
                             if current_attribute == student.religious:
                                 student.religious.value = False
                                 bot_response = self.generate_response('I do celebrate christmas! What do you normally do during the holiday season?', student.religious)
                                 self.delay_response(bot_response)
-                                return   bot_response
-                                # next_question = self.update_attribute_todo_and_choose_next(student.religious)
-                                # return "Oh, what do you normally do during the holiday season?"
+                                return  bot_response
                                 # TODO: how to handle user that does not celebrate christmas?
                             elif current_attribute == student.gifts:
                                 student.got_gifts.value = False
@@ -341,9 +336,11 @@ class Bot:
                     for index, string in enumerate(splitMessage):
                         string = string.lower()
                         if string == keyword:
+                            current_attribute = student.gifts
                             if self.check_whether_info_already_given('gifts'):
                                 bot_response = self.generate_response('Haha, I already told you: Tenía la figura en mi pieza este año. + hier einfügen was Alma als Geschenk bekommen hat (Geld, Videospiel, ...)', None)
-                            current_attribute = student.gifts
+                                self.delay_response(bot_response)
+                                return bot_response
                             bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts'])+ 'hier einfügen was Alma als Geschenk bekommen hat (Geld, Videospiel, ...)', current_attribute)
                             bot_infos.remove('gifts')
                             self.delay_response(bot_response)
@@ -356,10 +353,14 @@ class Bot:
                         string = string.lower()
                         if string == keyword:
                             current_attribute = student.tree
+                            if self.check_whether_info_already_given('tree'):
+                                bot_response = self.generate_response('Haha, I already told you that we did not had a tree', None)
+                                self.delay_response(bot_response)
+                                return bot_response
                             bot_response = self.generate_response(random.choice(response_dict['tree']), current_attribute)
                             bot_infos.remove('tree')
                             self.delay_response(bot_response)
-                            return   bot_response
+                            return  bot_response
 
                 # check if user asked about food
                 for keyword in food_keywords:
@@ -368,6 +369,10 @@ class Bot:
                         string = string.lower()
                         if string == keyword:
                             current_attribute = student.food
+                            if self.check_whether_info_already_given('food'):
+                                bot_response = self.generate_response('Haha, I already told you what we ate: blabla', None)
+                                self.delay_response(bot_response)
+                                return bot_response
                             bot_response = self.generate_response(random.choice(response_dict["food"]), current_attribute)
                             bot_infos.remove('food')
                             self.delay_response(bot_response)
@@ -380,6 +385,10 @@ class Bot:
                         string = string.lower()
                         if string == keyword:
                             current_attribute = student.weather
+                            if self.check_whether_info_already_given('weather'):
+                                bot_response = self.generate_response('Haha, I already told you that it was warm here in Spain', None)
+                                self.delay_response(bot_response)
+                                return bot_response
                             bot_response = self.generate_response(random.choice(response_dict['weather']), current_attribute)
                             bot_infos.remove('weather')
                             self.delay_response(bot_response)
@@ -387,11 +396,6 @@ class Bot:
 
                 # fallback response
                 return  'user asked a question'
-            else:
-                bot_should_prompt_question = True
-                # bot_response = self.generate_response('', current_attribute)
-                # return 'user did not ask a question' + ' ' + bot_response
-                # continue with code below
 
         # NAME
         # TODO: if only one word is returned this must be the name
@@ -462,8 +466,6 @@ class Bot:
                             student.religious.value = False
                             bot_response = self.generate_response('Si no celebras las Navidades, ¿hiciste algo más especial durante las vacaciones?', student.religious)
                             return bot_response
-                            # next_question = self.update_attribute_todo_and_choose_next(student.religious)
-                            # return "Oh, what do you normally do during the holiday season?"
                             # TODO: how to handle user that does not celebrate christmas?
                         elif current_attribute == student.gifts:
                             student.got_gifts.value = False
@@ -553,8 +555,8 @@ class Bot:
                     return   bot_response
 
 
-        # fallback response
-        return   '\U0001F60A'
+        # fallback response: smiley
+        return  '\U0001F60A'
 
     def welcome(self):
         return "¡Hola! Me llamo " + self.name + " y soy de " + self.country + " ¿Cómo te llamas?"
