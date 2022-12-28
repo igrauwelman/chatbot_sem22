@@ -109,16 +109,15 @@ class Bot:
 
     # return the user name or None in case of failure
     def process_user_name(self, keyword, index, splitMessage):
-        for index, string in enumerate(splitMessage):
-            if keyword == 'llamo' or keyword == 'soy':
-                # "Me llamo NAME"
-                # 'Yo soy NAME'
-                return splitMessage[index + 1]
-            elif keyword == 'nombre':
-                # "Mi nombre es NAME"
-                return splitMessage[index + 2]
-            else:
-                return None
+        if keyword == 'llamo' or keyword == 'soy':
+            # "Me llamo NAME"
+            # 'Yo soy NAME'
+            return splitMessage[index + 1]
+        elif keyword == 'nombre':
+            # "Mi nombre es NAME"
+            return splitMessage[index + 2]
+        else:
+            return None
 
     # remove finished attribute
     def update_attribute_todo_list(self, attribute_to_be_removed):
@@ -209,6 +208,7 @@ class Bot:
                             if current_attribute == student.religious:
                                 student.religious.value = True
                                 bot_response = self.generate_response(random.choice(response_dict['religious']), student.religious)
+                                self.delay_response(bot_response)
                                 return bot_response
                             elif current_attribute == student.gifts:
                                 student.got_gifts.value = True
@@ -415,7 +415,9 @@ class Bot:
                             attributes.remove(student.name)
                             current_attribute = student.religious
                             bot_should_prompt_question = True
-                            return "¡Hola " + student.name.value + random.choice(response_dict['introduction'])
+                            bot_response = "¡Hola " + student.name.value + random.choice(response_dict['introduction'])
+                            self.delay_response(bot_response)
+                            return bot_response
                         else:
                             return   self.defaultResponse
             
@@ -429,7 +431,8 @@ class Bot:
                         if current_attribute == student.religious:
                             student.religious.value = True
                             bot_response = self.generate_response(random.choice(response_dict['religious']), student.religious)
-                            return bot_response
+                            self.delay_response(bot_response)
+                            return   bot_response
                         elif current_attribute == student.gifts:
                             student.got_gifts.value = True
                             student.gifts.value = 'GIFTS THE STUDENT MENTIONED'
@@ -465,6 +468,7 @@ class Bot:
                         if current_attribute == student.religious:
                             student.religious.value = False
                             bot_response = self.generate_response('Si no celebras las Navidades, ¿hiciste algo más especial durante las vacaciones?', student.religious)
+                            self.delay_response(bot_response)
                             return bot_response
                             # TODO: how to handle user that does not celebrate christmas?
                         elif current_attribute == student.gifts:
