@@ -4,7 +4,7 @@ import re
 
 class Attribute():
     def __init__(self, n, v, q):
-        self.name = n
+        self.name = str(n)
         self.value = v
         self.questions = q
 
@@ -59,7 +59,10 @@ class Bot:
 
         if attributes:
             current_attribute = attributes[random.randint(0, len(attributes) - 1)]
-            return current_attribute.questions[random.randint(0, len(current_attribute.questions) - 1)]
+            if current_attribute.questions == None:
+                return "\U0001F60A"
+            else:
+                return current_attribute.questions[random.randint(0, len(current_attribute.questions) - 1)]
         else:
             return self.endMessage
 
@@ -165,7 +168,7 @@ class Bot:
                     return 'aha... ' + next_question  
 
 
-        return "..."
+        return "\U0001F60A"
 
     def welcome(self):
         return "¡Hola! Me llamo " + self.name + " y soy de " + self.country + " ¿Cómo te llamas?"
