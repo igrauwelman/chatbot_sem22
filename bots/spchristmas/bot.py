@@ -274,7 +274,8 @@ class Bot:
             for index, string in enumerate(splitMessage):
                 string = string.lower()
                 if string == keyword:
-                    bot_response = 'Por favor, no utilice expresiones inapropiadas.'
+                    # bot_response = 'Bitte antworte auf die Frage ohne unangemessene Ausdrücke.'
+                    bot_response = 'Por favor, responda la pregunta sin usar lenguaje inapropiado.'
                     return bot_response
 
         # check whether user asked back
