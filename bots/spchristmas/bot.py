@@ -23,6 +23,7 @@ attributes = [student.name, student.religious, student.gifts, student.tree, stud
 bot_infos = ['gifts', 'tree', 'food', 'weather']
 
 # KEYWORDS
+curse_keywords = ['ano', 'puta madre', 'puta', 'coño', 'cojones', 'cabrón', 'joder', 'sex', 'penis', 'arschloch']
 name_keywords = ['llamo', 'nombre', 'soy']
 response_keywords = ['sí', 'si', 'no']
 food_keywords = ['come', 'como', 'comemos', 'comiste', 'comistéis', 'comer', 'comisteis', 'comimos']
@@ -158,6 +159,7 @@ class Bot:
     endMessage = "It was so nice learning about how you spent the holidays!"
     age = 15
 
+
     # return the user name or None in case of failure
     def process_user_name(self, keyword, index, splitMessage):
         if keyword == 'llamo' or keyword == 'soy':
@@ -266,6 +268,14 @@ class Bot:
 
         # split message into word chunks
         splitMessage = last_user_message_cleaned.split()
+
+        for keyword in curse_keywords:
+            keyword.lower()
+            for index, string in enumerate(splitMessage):
+                string = string.lower()
+                if string == keyword:
+                    bot_response = 'Por favor, no utilice expresiones inapropiadas.'
+                    return bot_response
 
         # check whether user asked back
         if last_user_message.__contains__('tú?') or last_user_message.__contains__('tu?'):
