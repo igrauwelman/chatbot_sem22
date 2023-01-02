@@ -33,7 +33,7 @@ next_question = None
 class Bot:
     name = 'José '
     country = 'México'
-    avatar = 'avatar/perroquet.png'
+    avatar = 'avatar/mex_jose.jpeg'
     defaultResponse = "Lo siento, no entiendo lo que me quieres decir... ¿Lo podrías repetir, por favor?"
     endMessage = "It was so nice learning about how you spent the holidays!"
     age = 15

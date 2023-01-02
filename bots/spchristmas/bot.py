@@ -153,7 +153,7 @@ response_dict = {
 class Bot:
     name = 'Alma'
     country = 'España'
-    avatar = 'avatar/perroquet.png'
+    avatar = 'avatar/span_alma.jpeg'
     defaultResponse = "Lo siento, no entiendo. ¿Puede repetir eso de nuevo?"
     endMessage = "It was so nice learning about how you spent the holidays!"
     age = 15
