@@ -230,13 +230,17 @@ class Bot:
         global next_question
         global bot_should_prompt_question
 
-        if self.check_whether_attribute_already_finished(current_attr):
-            if bot_should_prompt_question:
-                next_question = self.choose_next_attribute_and_question()
-                return response + ' ' + next_question
+        # if student does not celebrate christmas, bot should not ask about gifts etc.
+        if student.religious.value == False:
             return response
-        next_question = random.choice(['¿Y tú?', current_attr.questions[random.randint(0, len(current_attr.questions) - 1)]])
-        return response + ' ' + next_question
+        else:
+            if self.check_whether_attribute_already_finished(current_attr):
+                if bot_should_prompt_question:
+                    next_question = self.choose_next_attribute_and_question()
+                    return response + ' ' + next_question
+                return response
+            next_question = random.choice(['¿Y tú?', current_attr.questions[random.randint(0, len(current_attr.questions) - 1)]])
+            return response + ' ' + next_question
 
     # if info is still in bot_infos, the info was not given to the user yet
     def check_whether_info_already_given(self, info):
@@ -494,10 +498,11 @@ class Bot:
                                         return bot_response
                             if current_attribute == student.religious:
                                 student.religious.value = False
+                                bot_should_prompt_question = False
+                                current_inq = 'non_religious_holidays'
                                 bot_response = self.generate_response('I do celebrate christmas! What do you normally do during the holiday season?', student.religious)
                                 self.delay_response(bot_response)
                                 return bot_response
-                                # TODO: how to handle user that does not celebrate christmas?
                             elif current_attribute == student.gifts:
                                 student.got_gifts.value = False
                                 student.gifts.value = 'none'
@@ -677,7 +682,7 @@ class Bot:
                         if self.check_whether_info_already_given('gifts'):
                             bot_response = self.generate_response_to_user_question('Haha, I already told you: Tenía la figura en mi pieza este año. + hier einfügen was Alma als Geschenk bekommen hat (Geld, Videospiel, ...)', student.gifts)
                         else:
-                            bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts'])+ 'hier einfügen was Alma als Geschenk bekommen hat (Geld, Videospiel, ...)', current_attribute)
+                            bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts'])+ 'hier einfügen was Alma als Geschenk bekommen hat (Geld, Videospiel, ...)', student.gifts)
                             bot_infos.remove('gifts')
                         self.delay_response(bot_response)
                         return bot_response
@@ -902,6 +907,8 @@ class Bot:
                                     return bot_response
                         if current_attribute == student.religious:
                             student.religious.value = False
+                            bot_should_prompt_question = False
+                            current_inq = 'non_religious_holidays'
                             bot_response = self.generate_response('Si no celebras las Navidades, ¿hiciste algo más especial durante las vacaciones?', student.religious)
                             self.delay_response(bot_response) 
                             return bot_response
@@ -942,55 +949,6 @@ class Bot:
                         return self.defaultResponse
 
         # TODO: do the same for negation keywords --> check current attribute to find out what the student "negates"
-            
-        # FOOD
-        for keyword in food_keywords:
-            keyword.lower()
-            for index, string in enumerate(splitMessage):
-                string.lower()
-                if string == keyword:
-                    # TODO: save what student mentioned about what they ate
-                    if self.check_whether_info_already_given('food'):
-                        reaction = '¡Suena delicioso!'
-                    else:
-                        reaction = '¡Suena delicioso! ' + random.choice(response_dict['food'])
-                        bot_infos.remove('food')
-                    bot_response = self.generate_response(reaction, student.food)
-                    self.delay_response(bot_response)
-                    return bot_response
-
-        # WEATHER
-        for keyword in weather_keywords:
-            keyword.lower()
-            for index, string in enumerate(splitMessage):
-                string.lower()
-                if string == keyword:
-                    # TODO: process what the student mentioned about the weather
-                    # differentiate between cold and warm weather in the bot's response
-                    if self.check_whether_info_already_given('weather'):
-                        reaction = 'aha... '
-                    else:
-                        reaction = '¡Qué interesante! ' + random.choice(response_dict['weather'])
-                        bot_infos.remove('weather')
-                    bot_response = self.generate_response(reaction, student.weather)
-                    self.delay_response(bot_response)
-                    return bot_response
-        
-        # GIFTS
-        for keyword in gift_keywords:
-            keyword.lower()
-            for index, string in enumerate(splitMessage):
-                string.lower()
-                if string == keyword:
-                    # TODO: process what the student mentioned about their gifts
-                    if self.check_whether_info_already_given('gifts'):
-                        reaction = '¡Qué generoso!'
-                    else:
-                        reaction = '¡Qué generoso! ' + random.choice(response_dict['gifts'])
-                        bot_infos.remove('gifts')
-                    bot_response = self.generate_response(reaction, student.gifts)
-                    self.delay_response(bot_response)
-                    return bot_response
 
         # messages that are responses to the bot's inquiries about an attribute (without the user asking back or asking another question)
         if current_inq == 'gifts_si':
@@ -1035,6 +993,104 @@ class Bot:
                 bot_response = "Sorry to hear that :( " + random.choice(response_dict['introduction'])
             self.delay_response(bot_response)
             return bot_response
+        elif current_inq == 'non_religious_holidays':
+            current_inq = None
+            bot_response = "That sounds interesting! (or other generic response to what the student did during the holidays) My teacher told me that we are chatting about christmas traditions in our cultures, so maybe I tell you about Spanish traditions nevertheless. What do you want to know?"
+            self.delay_response(bot_response)
+            return bot_response
+
+        # FOOD
+        for keyword in food_keywords:
+            keyword.lower()
+            for index, string in enumerate(splitMessage):
+                string.lower()
+                if string == keyword:
+                    # TODO: save what student mentioned about what they ate
+                    if self.check_whether_info_already_given('food'):
+                        # if student is not religious they might write "Tell me something about the food you eat on Christmas" for getting information about food
+                        if student.religious.value == False:
+                            reaction = 'I already told you that we ate blabla :)'
+                            bot_should_prompt_question = False
+                        else:
+                            reaction = '¡Suena delicioso!'
+                    else:
+                        if student.religious.value == False:
+                            reaction = random.choice(response_dict['food'])
+                            bot_should_prompt_question = False
+                        else:
+                            reaction = '¡Suena delicioso! ' + random.choice(response_dict['food'])
+                        bot_infos.remove('food')
+                    bot_response = self.generate_response(reaction, student.food)
+                    self.delay_response(bot_response)
+                    return bot_response
+
+        # WEATHER
+        for keyword in weather_keywords:
+            keyword.lower()
+            for index, string in enumerate(splitMessage):
+                string.lower()
+                if string == keyword:
+                    # TODO: process what the student mentioned about the weather
+                    # differentiate between cold and warm weather in the bot's response
+                    if self.check_whether_info_already_given('weather'):
+                        if student.religious.value == False:
+                            reaction = 'I already told you that it was warm in Spain :)'
+                            bot_should_prompt_question = False
+                        else:
+                            reaction = 'aha... '
+                    else:
+                        if student.religious.value == False:
+                            reaction = random.choice(response_dict['weather'])
+                            bot_should_prompt_question = False
+                        else:
+                            reaction = '¡Qué interesante! ' + random.choice(response_dict['weather'])
+                        bot_infos.remove('weather')
+                    bot_response = self.generate_response(reaction, student.weather)
+                    self.delay_response(bot_response)
+                    return bot_response
+
+         # TREE
+        for keyword in tree_keywords:
+            keyword.lower()
+            for index, string in enumerate(splitMessage):
+                string.lower()
+                if string == keyword:
+                    if self.check_whether_info_already_given('tree'):
+                        if student.religious.value == False:
+                            reaction = 'I already told you about our decoration :)'
+                            bot_should_prompt_question = False
+                    else:
+                        if student.religious.value == False:
+                            reaction = random.choice(response_dict['tree'])
+                            bot_should_prompt_question = False
+                        bot_infos.remove('tree')
+                    bot_response = self.generate_response(reaction, student.tree) 
+                    self.delay_response(bot_response)
+                    return bot_response
+        
+        # GIFTS
+        for keyword in gift_keywords:
+            keyword.lower()
+            for index, string in enumerate(splitMessage):
+                string.lower()
+                if string == keyword:
+                    # TODO: process what the student mentioned about their gifts
+                    if self.check_whether_info_already_given('gifts'):
+                        if student.religious.value == False:
+                            reaction = 'I already told you that I got blabla :)'
+                            bot_should_prompt_question = False
+                        else:
+                            reaction = '¡Qué generoso!'
+                    else:
+                        if student.religious.value == False:
+                            reaction = random.choice(response_dict['gifts'])
+                            bot_should_prompt_question = False
+                        else: 
+                            reaction = '¡Qué generoso! ' + random.choice(response_dict['gifts'])
+                        bot_infos.remove('gifts')
+                    bot_response = self.generate_response(reaction, student.gifts)
+                    self.delay_response(bot_response)
+                    return bot_response
 
         # fallback response: smiley
         return '\U0001F60A'
