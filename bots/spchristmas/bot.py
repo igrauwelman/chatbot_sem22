@@ -56,44 +56,49 @@ food_response_reactions = ["Did you like it? ", "Do you eat this every year?"]
 
 # reactions to simple "sí" or "no" responses by the user to get more info/make more conversation
 short_response_dict = {
-    "gifts_si": ["""Oh, tell me more! What did you get?""",
-                """Awesome, what did you get?""",
-                """Cool, what was your favorite gift?"""],
+    "gifts_si": ["""¡Cuéntame más! ¿Qué regalos has recibido?""",
+                """Genial, ¿qué regalos has recibido?""",
+                """Guay, ¿cuál fue tu regalo favorito?""",
+                """Genial, ¿cuál fue tu regalo favorito?"""],
 
-    "gifts_si_response": ["""That sounds awesome!""",
-                        """Nice, I bet you are really happy now!"""],
+    "gifts_si_response": ["""¡Suena genial!""",
+                        """¡Suena increíble!""",
+                        """Qué bien, seguro que ahora eres muy feliz."""],
 
-    "gifts_no": ["""Ah, gifts are not important right? What else did you do on Christmas Eve?"""],
+    "gifts_no": ["""Los regalos no son importantes, ¿verdad? ¿Qué más hiciste en Nochebuena?"""],
 
-    "gifts_no_response": ["""I see! The main point of Christmas is to spend time with people we love, isn't it :)"""],
+    "gifts_no_response": ["""Entiendo. El objetivo principal de la Navidad es pasar tiempo con las personas que queremos, ¿verdad? :)"""],
 
-    "tree_si": ["""Awesome, what color was the decoration?""",
-                """Wow! When do you usually decorate it? I heard that some German families decorate their tree very early, while others do it only on Christmas Eve!""",
-                """Oh, who decorated the tree?"""],
+    "tree_si": ["""Genial, ¿de qué color era la decoración?""",
+                """¡Qué bien! ¿Cuándo lo decoráis normalmente? He oído que algunas familias alemanas decoran su árbol muy temprano, mientras que otras lo hacen sólo en Nochebuena.""",
+                """¿Quién ha decorado el árbol?"""],
 
-    "tree_si_response": ["""Nice!""",
-                    """Awesome!""",
-                    """Beautiful!"""],
+    "tree_si_response": ["""¡Qué bien!""",
+                    """¡Qué guay!""",
+                    """¡Genial!""",
+                    """¡Qué lindo!""",
+                    """¡Qué bonito!"""],
 
-    "tree_no": ["""Do you have other traditional decoration?"""],
+    "tree_no": ["""¿Tenéis otra decoración tradicional?"""],
 
-    "other_deco_inq": ["""What kind of decoration?"""],
+    "other_deco_inq": ["""¿Qué tipo de decoración?"""],
 
-    "other_deco_si": ["""Ah, interesting!"""],
+    "other_deco_si": ["""¡Muy interesante!"""],
 
-    "other_deco_no": ["""Decoration is not important in your family, I see :)"""],
+    "other_deco_no": ["""Parece que la decoración no es importante en tu familia."""],
 
-    "weather_si": ["""Wow, did it snow as well?"""],
+    "weather_si": ["""Vaya, ¿también nevó?"""],
     
-    "snow_si": ["""Oh, I'm jealous!"""],
+    "snow_si": ["""¡No me digas!"""],
 
-    "snow_no": ["""What a bummer!"""],
+    "snow_no": ["""¡Qué pena!""",
+                """¡Qué lástima!"""],
 
-    "weather_no": ["""Did you miss the snow?"""],
+    "weather_no": ["""¿Has echado de menos la nieve?"""],
 
-    "missed_snow_si": ["""I feel you!"""],
+    "missed_snow_si": ["""¡Entiendo!"""],
 
-    "missed_snow_no": ["""Alright, not everyone enjoys snow :)"""]
+    "missed_snow_no": ["""Vale, no a todos les gusta la nieve :)"""]
 }
 
 # dictionary with responses
@@ -150,15 +155,13 @@ response_dict = {
 
 }
 
-# TODO: what if the student does not send a message? (chat function will only be called if user sends a message)
 class Bot:
     name = 'Alma'
     country = 'España'
     avatar = 'avatar/span_alma.jpeg'
-    defaultResponse = "Lo siento, no entiendo. ¿Puede repetir eso de nuevo?"
-    endMessage = "It was so nice learning about how you spent the holidays!"
+    defaultResponse = 'Lo siento, no entiendo. ¿Puede repetir eso de nuevo?'
+    endMessage = 'Ahora tengo deberes que hacer. Fue guay charlar contigo, aprendí mucho sobre las tradiciones alemanas. ¡Ojalá podamos repetirlo pronto!'
     age = 15
-
 
     # return the user name or None in case of failure
     def process_user_name(self, keyword, index, splitMessage):
@@ -201,7 +204,7 @@ class Bot:
             current_attribute = attributes[random.randint(0, len(attributes) - 1)]
             # Null check
             if current_attribute.questions == None:
-                return " "
+                return ' '
             else:
                 return current_attribute.questions[random.randint(0, len(current_attribute.questions) - 1)]
         else:
@@ -232,7 +235,7 @@ class Bot:
                 next_question = self.choose_next_attribute_and_question()
                 return response + ' ' + next_question
             return response
-        next_question = random.choice(["¿Y tú?", current_attr.questions[random.randint(0, len(current_attr.questions) - 1)]])
+        next_question = random.choice(['¿Y tú?', current_attr.questions[random.randint(0, len(current_attr.questions) - 1)]])
         return response + ' ' + next_question
 
     # if info is still in bot_infos, the info was not given to the user yet
@@ -545,7 +548,7 @@ class Bot:
             if current_attribute == student.weather: 
                 bot_should_prompt_question = False
                 if self.check_whether_info_already_given('weather'):
-                    reaction = "I already told you that it was warm. Sometimes I'm jealous of those that experience snow on Christmas Eve!"
+                    reaction = 'I already told you that it was warm. Sometimes I am jealous of those that experience snow on Christmas Eve!'
                 else:
                     reaction = random.choice(response_dict['weather'])
                     bot_infos.remove('weather')
@@ -556,7 +559,7 @@ class Bot:
             if current_attribute == student.tree:
                 bot_should_prompt_question = False
                 if self.check_whether_info_already_given('tree'):
-                    reaction = "I already told you that we did not have a tree but instead our Krippe. I sometimes think about how it would be if we had a christmas tree. It would certainly be strange, but I think I would love to help decorate it fully in red!"
+                    reaction = 'I already told you that we did not have a tree but instead our Krippe. I sometimes think about how it would be if we had a christmas tree. It would certainly be strange, but I think I would love to help decorate it fully in red!'
                 else:
                     reaction = random.choice(response_dict['tree'])
                     bot_infos.remove('tree')
@@ -567,7 +570,7 @@ class Bot:
             if current_attribute == student.gifts:
                 bot_should_prompt_question = False
                 if self.check_whether_info_already_given('gifts'):
-                    reaction = "I already told you about my gifts: Almas gifts. I think my favorite thing this year was that the figure was in my piece of cake :)"
+                    reaction = 'I already told you about my gifts: Almas gifts. I think my favorite thing this year was that the figure was in my piece of cake :)'
                 else:
                     reaction = random.choice(response_dict['gifts'])
                     bot_infos.remove('gifts')
@@ -705,7 +708,7 @@ class Bot:
                         if self.check_whether_info_already_given('food'):
                             bot_response = self.generate_response_to_user_question('Haha, I already told you what we ate: blabla', student.food)
                         else:
-                            bot_response = self.generate_response_to_user_question(random.choice(response_dict["food"]), current_attribute)
+                            bot_response = self.generate_response_to_user_question(random.choice(response_dict['food']), current_attribute)
                             bot_infos.remove('food')
                         self.delay_response(bot_response)
                         return bot_response
@@ -746,7 +749,7 @@ class Bot:
                     if student.name.value != None:
                         # TODO: check whether student changed their name ?
                         # alternatively, just say "Okay, NAME" and prompt the next question
-                        return "¡Lo sé, " + student.name.value + "! "
+                        return '¡Lo sé, ' + student.name.value + '! '
                     else:
                         current_attribute = student.name
                         student.name.value = self.process_user_name(keyword, index, splitMessage)
@@ -754,7 +757,7 @@ class Bot:
                             attributes.remove(student.name)
                             current_attribute = student.religious
                             # bot_should_prompt_question = True
-                            bot_response = "¡Hola " + student.name.value + '! ' + random.choice(response_dict['introduction'])
+                            bot_response = '¡Hola ' + student.name.value + '! ' + random.choice(response_dict['introduction'])
                             self.delay_response(bot_response)
                             return bot_response
                         else:
@@ -858,7 +861,7 @@ class Bot:
                         if len(splitMessage) < 4:
                             if current_attribute == student.gifts:
                                 inq_counter += 1
-                                current_inq = "gifts_no"
+                                current_inq = 'gifts_no'
                                 bot_response = random.choice(short_response_dict['gifts_no'])
                                 self.delay_response(bot_response)
                                 return bot_response
@@ -1027,7 +1030,7 @@ class Bot:
             current_attribute = student.religious
             bot_should_prompt_question = True
             if last_user_message_cleaned.__contains__('también') or last_user_message_cleaned.__contains__('tambien') or last_user_message_cleaned.__contains__('bien') or last_user_message_cleaned.__contains__('También') or last_user_message_cleaned.__contains__('Tambien') or last_user_message_cleaned.__contains__('Bien'):
-                bot_response = "Nice! " + random.choice(response_dict['introduction'])
+                bot_response = 'Nice! ' + random.choice(response_dict['introduction'])
             else:
                 bot_response = "Sorry to hear that :( " + random.choice(response_dict['introduction'])
             self.delay_response(bot_response)
@@ -1037,4 +1040,4 @@ class Bot:
         return '\U0001F60A'
 
     def welcome(self):
-        return "¡Hola! Me llamo " + self.name + " y soy de " + self.country + " ¿Cómo te llamas?" 
+        return '¡Hola! Me llamo ' + self.name + ' y soy de ' + self.country + ' ¿Cómo te llamas?' 
