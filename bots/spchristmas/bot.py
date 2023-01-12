@@ -268,7 +268,7 @@ class Bot:
         global current_inq
 
         # randomly select whether bot should prompt a question after reacting to user message
-        bot_should_prompt_question = random.choice([True, False])
+        bot_should_prompt_question = random.choice([True, False, False])
         
         # remove punctuation
         last_user_message_cleaned = re.sub(r'[^\w\s]', '', last_user_message)
@@ -284,6 +284,12 @@ class Bot:
                     # bot_response = 'Bitte antworte auf die Frage ohne unangemessene Ausdrücke.'
                     bot_response = 'Por favor, responda la pregunta sin usar lenguaje inapropiado.'
                     return bot_response
+
+        # if student did not celebrate christmas, they should ask bot questions -> if bot gave all infos, end the conversation
+        if student.religious.value == False and not bot_infos:
+            bot_response = self.endMessage
+            self.delay_response(bot_response)
+            return bot_response
 
         # check whether user asked back
         if last_user_message.__contains__('tú?') or last_user_message.__contains__('tu?'):
@@ -741,8 +747,6 @@ class Bot:
 
             # fallback response
             return 'Sorry, I did not understand your question. Could you repeat it please?'
-        else:
-            bot_should_prompt_question = True
 
         # check keywords (message did not contain any question)
         # TODO: if only one word is returned this must be the name
@@ -837,8 +841,11 @@ class Bot:
                             if self.check_whether_info_already_given('gifts'):
                                 reaction = '¡Cómo mola!'
                             else:
-                                reaction = '¡Cómo mola! ' + random.choice(response_dict['gifts'])
-                                bot_infos.remove('gifts')
+                                # decide if bot should give own info
+                                reaction = random.choices(population=['¡Cómo mola! ' + random.choice(response_dict['gifts']), '¡Cómo mola!'],weights=[0.2, 0.8],k=1)[0]
+                                # if length of the reaction is greater than 3, the bot gave own info -> remove attribute from bot info todo list
+                                if len(reaction.split()) > 3:
+                                    bot_infos.remove('gifts')
                             bot_response = self.generate_response(reaction, student.gifts)
                             self.delay_response(bot_response)
                             return bot_response
@@ -847,8 +854,11 @@ class Bot:
                             if self.check_whether_info_already_given('tree'):
                                 reaction = 'Eso suena genial.'
                             else:
-                                reaction = 'Eso suena genial. ' + random.choice(response_dict['tree'])
-                                bot_infos.remove('tree')
+                                # decide if bot should give own info
+                                reaction = random.choices(population=['Eso suena genial. ' + random.choice(response_dict['tree']), 'Eso suena genial.'],weights=[0.2, 0.8],k=1)[0]
+                                # if length of the reaction is greater than 3, the bot gave own info -> remove attribute from bot info todo list
+                                if len(reaction.split()) > 3:
+                                    bot_infos.remove('tree')
                             bot_response = self.generate_response(reaction, student.tree)
                             self.delay_response(bot_response)
                             return bot_response
@@ -857,8 +867,11 @@ class Bot:
                             if self.check_whether_info_already_given('weather'):
                                 reaction = '¡Guau, me encantaría ver eso!'
                             else:
-                                reaction = '¡Guau, me encantaría ver eso!' + random.choice(response_dict['weather'])
-                                bot_infos.remove('weather')
+                                # decide if bot should give own info
+                                reaction = random.choices(population=['¡Guau, me encantaría ver eso! ' + random.choice(response_dict['weather']), '¡Guau, me encantaría ver eso!'],weights=[0.2, 0.8],k=1)[0]
+                                # if length of the reaction is greater than 3, the bot gave own info -> remove attribute from bot info todo list
+                                if len(reaction.split()) > 3:
+                                    bot_infos.remove('weather')
                             bot_response = self.generate_response(reaction, student.weather)
                             self.delay_response(bot_response)
                             return bot_response
@@ -919,8 +932,11 @@ class Bot:
                             if self.check_whether_info_already_given('gifts'):
                                 reaction = 'Some response about how gifts are not important.'
                             else:
-                                reaction = 'Some response about how gifts are not important.' + random.choice(response_dict['gifts'])
-                                bot_infos.remove('gifts')
+                                # decide if bot should give own info
+                                reaction = random.choices(population=['Some response about how gifts are not important. ' + random.choice(response_dict['gifts']), 'Some response about how gifts are not important.'],weights=[0.2, 0.8],k=1)[0]
+                                # if length of the reaction is greater than 10, the bot gave own info -> remove attribute from bot info todo list
+                                if len(reaction.split()) > 10:
+                                    bot_infos.remove('gifts')
                             bot_response = self.generate_response(reaction, student.gifts)
                             self.delay_response(bot_response)
                             return bot_response
@@ -929,8 +945,11 @@ class Bot:
                             if self.check_whether_info_already_given('tree'):
                                 reaction = 'No importa, no todas las familias tienen árbol de Navidad!'
                             else:
-                                reaction = 'No importa, no todas las familias tienen árbol de Navidad! ' + random.choice(response_dict['tree'])
-                                bot_infos.remove('tree')
+                                # decide if bot should give own info
+                                reaction = random.choices(population=['No importa, no todas las familias tienen árbol de Navidad! ' + random.choice(response_dict['tree']), 'No importa, no todas las familias tienen árbol de Navidad!'],weights=[0.2, 0.8],k=1)[0]
+                                # if length of the reaction is greater than 10, the bot gave own info -> remove attribute from bot info todo list
+                                if len(reaction.split()) > 10:
+                                    bot_infos.remove('tree')
                             bot_response = self.generate_response(reaction, student.tree)
                             self.delay_response(bot_response)
                             return bot_response
@@ -939,8 +958,11 @@ class Bot:
                             if self.check_whether_info_already_given('weather'):
                                 reaction = 'some reaction to not cold weather without repeating that it was not cold for bot either'
                             else:
-                                reaction = '¡Tampoco con nosotros! ' + random.choice(response_dict['weather'])
-                                bot_infos.remove('weather')
+                                # decide if bot should give own info
+                                reaction = random.choices(population=['¡Tampoco con nosotros! ' + random.choice(response_dict['weather']), 'some reaction to not cold weather'],weights=[0.2, 0.8],k=1)[0]
+                                # if length of the reaction is greater than 10, the bot gave own info -> remove attribute from bot info todo list
+                                if len(reaction.split()) > 6:
+                                    bot_infos.remove('weather')
                             bot_response = self.generate_response(reaction, student.weather)
                             self.delay_response(bot_response)
                             return bot_response
@@ -986,7 +1008,7 @@ class Bot:
         elif current_inq == 'mood':
             current_inq = None
             current_attribute = student.religious
-            bot_should_prompt_question = True
+            bot_should_prompt_question = True 
             if last_user_message_cleaned.__contains__('también') or last_user_message_cleaned.__contains__('tambien') or last_user_message_cleaned.__contains__('bien') or last_user_message_cleaned.__contains__('También') or last_user_message_cleaned.__contains__('Tambien') or last_user_message_cleaned.__contains__('Bien'):
                 bot_response = 'Nice! ' + random.choice(response_dict['introduction'])
             else:
@@ -1017,9 +1039,13 @@ class Bot:
                         if student.religious.value == False:
                             reaction = random.choice(response_dict['food'])
                             bot_should_prompt_question = False
+                            bot_infos.remove('food')
                         else:
-                            reaction = '¡Suena delicioso! ' + random.choice(response_dict['food'])
-                        bot_infos.remove('food')
+                            # decide if bot should give own info
+                            reaction = random.choices(population=['¡Suena delicioso! ' + random.choice(response_dict['food']), '¡Suena delicioso!'],weights=[0.2, 0.8],k=1)[0]
+                            # if length of the reaction is greater than 3, the bot gave own info -> remove attribute from bot info todo list
+                            if len(reaction.split()) > 3:
+                                bot_infos.remove('food')
                     bot_response = self.generate_response(reaction, student.food)
                     self.delay_response(bot_response)
                     return bot_response
@@ -1042,9 +1068,13 @@ class Bot:
                         if student.religious.value == False:
                             reaction = random.choice(response_dict['weather'])
                             bot_should_prompt_question = False
+                            bot_infos.remove('weather')
                         else:
-                            reaction = '¡Qué interesante! ' + random.choice(response_dict['weather'])
-                        bot_infos.remove('weather')
+                            # decide if bot should give own info
+                            reaction = random.choices(population=['¡Qué interesante! ' + random.choice(response_dict['weather']), '¡Qué interesante!'],weights=[0.2, 0.8],k=1)[0]
+                            # if length of the reaction is greater than 3, the bot gave own info -> remove attribute from bot info todo list
+                            if len(reaction.split()) > 3:
+                                bot_infos.remove('weather')
                     bot_response = self.generate_response(reaction, student.weather)
                     self.delay_response(bot_response)
                     return bot_response
@@ -1057,12 +1087,12 @@ class Bot:
                 if string == keyword:
                     if self.check_whether_info_already_given('tree'):
                         if student.religious.value == False:
-                            reaction = 'I already told you about our decoration :)'
                             bot_should_prompt_question = False
+                        reaction = 'I already told you about our decoration :)'
                     else:
                         if student.religious.value == False:
-                            reaction = random.choice(response_dict['tree'])
                             bot_should_prompt_question = False
+                        reaction = random.choice(response_dict['tree'])
                         bot_infos.remove('tree')
                     bot_response = self.generate_response(reaction, student.tree) 
                     self.delay_response(bot_response)
@@ -1085,9 +1115,13 @@ class Bot:
                         if student.religious.value == False:
                             reaction = random.choice(response_dict['gifts'])
                             bot_should_prompt_question = False
+                            bot_infos.remove('gifts')
                         else: 
-                            reaction = '¡Qué generoso! ' + random.choice(response_dict['gifts'])
-                        bot_infos.remove('gifts')
+                            # decide if bot should give own info
+                            reaction = random.choices(population=['¡Qué generoso! ' + random.choice(response_dict['gifts']), '¡Qué generoso!'],weights=[0.2, 0.8],k=1)[0]
+                            # if length of the reaction is greater than 3, the bot gave own info -> remove attribute from bot info todo list
+                            if len(reaction.split()) > 3:
+                                bot_infos.remove('gifts')
                     bot_response = self.generate_response(reaction, student.gifts)
                     self.delay_response(bot_response)
                     return bot_response
