@@ -26,11 +26,11 @@ bot_infos = ['gifts', 'tree', 'food', 'weather']
 curse_keywords = ['ano', 'puta madre', 'puta', 'coño', 'cojones', 'cabrón', 'joder', 'sex', 'penis', 'arschloch']
 name_keywords = ['llamo', 'nombre', 'soy']
 response_keywords = ['sí', 'si', 'no']
-food_keywords = ['come', 'como', 'comemos', 'comiste', 'comistéis', 'comer', 'comisteis', 'comimos']
-weather_keywords = ['nieve', 'sol', 'fría', 'fria', 'frio', 'frío', 'cálida', 'calida', 'cálido', 'calido', 'lluvia', 'lloviendo', 'lluvioso', 'tiempo']
-gift_keywords = ['regalos', 'regalo', 'regalaron', 'tengo', 'recibí', 'recibi']
+food_keywords = ['come', 'como', 'comemos', 'comiste', 'comistéis', 'comer', 'comisteis', 'comimos', 'comida', 'comido']
+weather_keywords = ['nieve', 'sol', 'fría', 'fria', 'frio', 'frío', 'cálida', 'calida', 'cálido', 'calido', 'lluvia', 'lloviendo', 'lluvioso', 'tiempo', 'nevando', 'calor']
+gift_keywords = ['regalos', 'regalo', 'regalaron', 'tengo', 'recibí', 'recibi', 'regalar']
 tree_keywords = ['árbol', 'arbol', 'decoras', 'decora', 'adornos', 'decoración', 'decoracion']
-# TODO: negation_keywords = ['no', 'nada', 'tampoco', 'nunca', 'ni', 'ningún', 'ninguna', 'ninguno']
+# TODO: negation_keywords = ['nunca', 'jamás', 'jamas']
 
 # VARIABLES
 # indicates if bot should ask a next question or if it should wait for the user to ask a question
@@ -47,12 +47,6 @@ bot_response = None
 inq_counter = 0
 # what bot currently asks more about
 current_inq = None
-
-# TODO: reactions to food responses by the user to make more conversation
-food_response_reactions = ["Did you like it? ", "Do you eat this every year?"]
-
-# TODO: reactions to weather responses by the user to make more conversation
-# TODO: reactions to gift responses by the user (without sí or no) to make more conversation
 
 # reactions to simple "sí" or "no" responses by the user to get more info/make more conversation
 short_response_dict = {
@@ -131,7 +125,7 @@ response_dict = {
                 almendras tostadas, azúcar, clara de huevo y miel. A veces también se añade fruta confitada, 
                 chocolate o mazapán. El turrón es una especialidad navideña española y se suele comer entre 
                 o después de la comida festiva."""],
-
+# TODO: check if Alma's personal gifts are added in each response
     "gifts": ["""La entrega de regalos se celebra en España el 6 de enero. Es el día de los Reyes Magos. 
                 Traen regalos a los niños. Tradicionalmente hay un "Resoco de Reyes". Es un pastel en forma de anillo 
                 con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día.""",
@@ -407,6 +401,7 @@ class Bot:
                                 self.delay_response(bot_response)
                                 return  bot_response
                             elif current_attribute == student.tree:
+                                # TODO: check if inq==0 if clause is the same (see above)
                                 student.tree.value = True
                                 if self.check_whether_info_already_given('tree'):
                                     reaction = 'Eso suena genial. Como mencioné anteriormente, no teníamos un árbol de Navidad, pero decoramos el belén.'
@@ -417,6 +412,7 @@ class Bot:
                                 self.delay_response(bot_response)
                                 return bot_response
                             elif current_attribute == student.weather:
+                                # TODO: check if if-clause above is the same
                                 student.weather.value = True
                                 if self.check_whether_info_already_given('weather'):
                                     reaction = '¡Wow, me encantaría ver eso! Como te dije antes, en mi ciudad suele hacer calor.'
@@ -522,6 +518,7 @@ class Bot:
                                 self.delay_response(bot_response)
                                 return bot_response
                             elif current_attribute == student.tree:
+                                # TODO: check above if already a case
                                 student.tree.value = False
                                 if self.check_whether_info_already_given('tree'):
                                     reaction = 'No importa, no todas las familias tienen árbol de Navidad! Como dije, generalmente no tenemos un árbol de Navidad.'
@@ -616,7 +613,7 @@ class Bot:
                         if self.check_whether_info_already_given('gifts'):
                             reaction = '¡Ah, ya entiendo! Como dije, tengo un videojuego y una cámara nueva.'
                         else:
-                            reaction = '¡Qué generoso! ' + random.choice(response_dict['gifts'])
+                            reaction = '¡Ah, ya entiendo! ' + random.choice(response_dict['gifts'])
                             bot_infos.remove('gifts')
                         bot_response = self.generate_response(reaction, student.gifts)
                         self.delay_response(bot_response)
@@ -639,12 +636,6 @@ class Bot:
                 # we are here if the bot asked about gifts for the first time, the user answered "no" (or variations), the bot asked what they did instead on christmas eve, the user (probably) answered what they did and "y tú?" (or variations)
                 inq_counter = 0
                 current_inq = None
-                # TODO: what to answer about what the bot did on christmas eve?
-                # if self.check_whether_info_already_given('gifts'):
-                #     reaction = 'I already told you about my gifts blabla'
-                # else:
-                #     reaction = 'También recibí regalos.' + random.choice(response_dict['gifts'])
-                #     bot_infos.remove('gifts')
                 reaction = 'Jugué con mis hermanos y probé mis regalos.'
                 bot_response = random.choice(short_response_dict['gifts_no_response']) + ' ' + str(self.generate_response(reaction, student.gifts))
                 self.delay_response(bot_response)
@@ -750,7 +741,6 @@ class Bot:
             return self.defaultResponse
 
         # check keywords (message did not contain any question)
-        # TODO: if only one word is returned this must be the name
         for keyword in name_keywords:
             keyword.lower()
             for index, string in enumerate(splitMessage):
@@ -925,7 +915,6 @@ class Bot:
                             bot_response = self.generate_response('Si no celebras las Navidades, ¿hiciste algo más especial durante las vacaciones?', student.religious)
                             self.delay_response(bot_response) 
                             return bot_response
-                            # TODO: how to handle user that does not celebrate christmas?
                         elif current_attribute == student.gifts: 
                             student.got_gifts.value = False
                             student.gifts.value = 'none'
