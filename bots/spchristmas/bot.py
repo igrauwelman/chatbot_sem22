@@ -13,9 +13,9 @@ class Student():
     religious = Attribute('religious', None, None)
     got_gifts = Attribute('got gifts', None, None)
     gifts = Attribute('gifts', None, ['¿Qué te regalaron?', '¿Recibiste algún regalo?', '¿Recibiste regalos por navidad?'])
-    tree = Attribute('tree', None, ['¿Tuviste un árbol de navidad?', 'Escuché que la gente en Alemania tiene un árbol de Navidad. ¿Tú también tenías un árbol?', '¿Tuviste un árbol de navidad? ¡Escuché que la gente en Alemania tradicionalmente decora un árbol para Navidad!'])
+    tree = Attribute('tree', None, ['¿Tuviste un árbol de navidad?', 'Escuché que la gente en Alemania tiene un árbol de Navidad. ¿Tú también tenías un árbol?', '¿Tuviste un árbol de navidad? ¡Escuché que la gente en Alemania tradicionalmente decora un árbol navideño!'])
     food = Attribute('food', None, ['¿Qué comistéis en Navidad?', '¿Qué sueles comer en Navidad?', '¿Qué cenaste en Navidad?'])
-    weather = Attribute('weather', None, ['¿Hacía frío en Navidad en tu ciudad?', '¿Cómo estuvo el tiempo en navidad?'])
+    weather = Attribute('weather', None, ['¿Hacía frío en Navidad en tu ciudad?', '¿Cómo estuvo el tiempo en Navidad?'])
 
 # instantiate student, attribute todo list and bot info todo list
 student = Student()
@@ -134,7 +134,7 @@ response_dict = {
                 en forma de anillo con una figura escondida en su interior. Quien tenga la figura en su porción puede 
                 considerarse rey durante todo el día."""],
 
-    "tree": ["""No tenemos árbol de Navidad, pero ponemos un belén con la familia y lo decoramos. 
+    "tree": ["""No tenemos un árbol de Navidad, pero ponemos un belén con la familia y lo decoramos. 
                 Pero sé que algunos de mis amigos también tienen ya un árbol de Navidad.""",
             """En lugar de tener un árbol de Navidad, en nuestra familia ponemos un belén y lo decoramos. Sin embargo, 
                 sé que algunos de mis amigos sí tienen un árbol de Navidad."""],
@@ -153,7 +153,7 @@ class Bot:
     name = 'Alma'
     country = 'España'
     avatar = 'avatar/span_alma.jpeg'
-    defaultResponse = 'Lo siento, no entiendo. ¿Puede repetir eso de nuevo?'
+    defaultResponse = 'Lo siento, no entiendo. ¿Puedes repetir de nuevo?'
     endMessage = 'Ahora tengo deberes que hacer. Fue guay charlar contigo, ¡ojalá podamos repetirlo pronto!'
     age = 15
 
@@ -276,7 +276,6 @@ class Bot:
             for index, string in enumerate(splitMessage):
                 string = string.lower()
                 if string == keyword:
-                    # bot_response = 'Bitte antworte auf die Frage ohne unangemessene Ausdrücke.'
                     bot_response = 'Por favor, responda la pregunta sin usar lenguaje inapropiado.'
                     return bot_response
 
@@ -301,7 +300,7 @@ class Bot:
                                 inq_counter = 0
                                 current_inq = None
                                 if self.check_whether_info_already_given('tree'):
-                                    reaction = 'Todos los años montamos el belén y, como te decía, lo decoramos.'
+                                    reaction = 'Todos los años ponemos el belén y, como te decía, lo decoramos.'
                                 else:
                                     reaction = random.choice(response_dict['tree'])
                                     bot_infos.remove('tree')
@@ -328,7 +327,7 @@ class Bot:
                                         inq_counter += 1
                                         current_inq = 'other_deco'
                                         if self.check_whether_info_already_given('tree'):
-                                            reaction = 'Todos los años montamos el belén y, como te decía, lo decoramos.'
+                                            reaction = 'Todos los años ponemos el belén y, como te decía, lo decoramos.'
                                         else:
                                             reaction = random.choice(response_dict['tree'])
                                             bot_infos.remove('tree')
@@ -365,7 +364,7 @@ class Bot:
                                         inq_counter = 0
                                         current_inq = None
                                         if self.check_whether_info_already_given('weather'):
-                                            reaction = '¡Sí! Como en mi pueblo no hay nieve en Navidad, a veces vamos en Sierra Nevada a esquiar.'
+                                            reaction = '¡Sí! Como en mi pueblo no hay nieve en Navidad, a veces vamos a Sierra Nevada para esquiar.'
                                         else:
                                             reaction = random.choice(response_dict['weather'])
                                             bot_infos.remove('weather')
@@ -430,7 +429,7 @@ class Bot:
                                         inq_counter += 1
                                         current_inq = 'gifts_no' 
                                         if self.check_whether_info_already_given('gifts'):
-                                            reaction = 'Ya os conté lo que me regalaron por Navidad, pero creo que lo más importante es disfrutar de esa época especial del año.'
+                                            reaction = 'Ya te conté lo que me regalaron para Navidad, pero creo que lo más importante es disfrutar de esa época especial del año.'
                                         else:
                                             reaction = random.choice(response_dict["gifts"])
                                             bot_infos.remove('gifts')
@@ -455,7 +454,7 @@ class Bot:
                                         inq_counter += 1
                                         current_inq = 'tree_no' 
                                         if self.check_whether_info_already_given('tree'):
-                                            reaction = 'Como dije, tampoco teníamos un árbol de Navidad. Pero un par de amigos míos tuvieron uno este año.'
+                                            reaction = 'Como dije, tampoco teníamos un árbol de Navidad. Pero algunos amigos míos tuvieron uno este año.'
                                         else:
                                             reaction = random.choice(response_dict['tree'])
                                             bot_infos.remove('tree')
@@ -480,7 +479,7 @@ class Bot:
                                         inq_counter = 0
                                         current_inq = None
                                         if self.check_whether_info_already_given('weather'):
-                                            reaction = 'No tenemos nieve en Málaga, a veces la echo un poco de menos en Navidad.'
+                                            reaction = 'No tenemos nieve en Málaga, a veces la echo de menos un poco en Navidad.'
                                         else:
                                             reaction = random.choice(response_dict['weather'])
                                             bot_infos.remove('weather')
@@ -510,7 +509,7 @@ class Bot:
                                 student.got_gifts.value = False
                                 student.gifts.value = 'none'
                                 if self.check_whether_info_already_given('gifts'):
-                                    reaction = 'Ya les dije que me dieron regalos, pero creo que esto no es lo más importante de la navidad. ¡Disfruto mucho más pasar tiempo con mi familia!'
+                                    reaction = 'Ya te dije que me dieron regalos, pero creo que esto no es lo más importante de la Navidad. ¡Disfruto mucho más pasar tiempo con mi familia!'
                                 else:
                                     reaction = '¡De todos modos, no creo que los regalos sean lo más importante de la Navidad! ' + random.choice(response_dict["gifts"])
                                     bot_infos.remove('gifts')
@@ -521,7 +520,7 @@ class Bot:
                                 # TODO: check above if already a case
                                 student.tree.value = False
                                 if self.check_whether_info_already_given('tree'):
-                                    reaction = 'No importa, no todas las familias tienen árbol de Navidad! Como dije, generalmente no tenemos un árbol de Navidad.'
+                                    reaction = 'No importa, ¡no todas las familias tienen árbol de Navidad! Como dije, generalmente no tenemos un árbol navideño'
                                 else:
                                     reaction = 'No importa, no todas las familias tienen árbol de Navidad! ' + random.choice(response_dict['tree'])
                                     bot_infos.remove('tree')
@@ -531,7 +530,7 @@ class Bot:
                             elif current_attribute == student.weather:
                                 student.weather.value = False
                                 if self.check_whether_info_already_given('weather'):
-                                    reaction = 'Luego tuvimos un clima similar!'
+                                    reaction = 'Entonces, ¡tuvimos un clima similar!'
                                 else:
                                     reaction = '¡Tampoco con nosotros! ' + random.choice(response_dict['weather'])
                                     bot_infos.remove('weather')
@@ -546,7 +545,7 @@ class Bot:
             if current_attribute == student.food:
                 bot_should_prompt_question = False
                 if self.check_whether_info_already_given('food'):
-                    reaction = 'Como decía, de entrada comemos unas tapas, por ejemplo, luego una sopa y un pescado frito o una carne. Pero lo mejor siempre es el postre, por ejemplo hay bizcochos como los polvorones o los mantecados, pero mi dulce favorito es el turrón.'
+                    reaction = 'Como decía, de entrada comemos unas tapas, por ejemplo, luego una sopa y un pescado frito o carne. Pero lo mejor siempre es el postre, por ejemplo hay bizcochos como los polvorones o los mantecados, pero mi dulce favorito es el turrón.'
                 else:
                     reaction = random.choice(response_dict['food'])
                     bot_infos.remove('food')
@@ -568,7 +567,7 @@ class Bot:
             if current_attribute == student.tree:
                 bot_should_prompt_question = False
                 if self.check_whether_info_already_given('tree'):
-                    reaction = 'No tenemos árbol de Navidad, pero, como dije, decoramos el pesebre. Pero a veces me pregunto cómo sería tener un árbol de Navidad. Eso sería muy extraño, pero creo que me divertiría ayudando a decorar el árbol todo en rojo.'
+                    reaction = 'No tenemos un árbol de Navidad, pero, como dije, decoramos el belén. Pero a veces me pregunto cómo sería tener un árbol de Navidad. Eso sería muy extraño, pero creo que me divertiría ayudando a decorar el árbol todo en rojo.'
                 else:
                     reaction = random.choice(response_dict['tree'])
                     bot_infos.remove('tree')
@@ -646,7 +645,7 @@ class Bot:
                 inq_counter = 0
                 current_inq = None
                 if self.check_whether_info_already_given('tree'):
-                    reaction = 'Como dije, no tenemos árbol de navidad ;)'
+                    reaction = 'Como dije, no tenemos árbol de Navidad ;)'
                 else:
                     reaction = random.choice(response_dict['tree'])
                     bot_infos.remove('tree')
@@ -660,7 +659,7 @@ class Bot:
                 inq_counter = 0
                 current_inq = None
                 if self.check_whether_info_already_given('tree'):
-                    reaction = 'Todos los años montamos el belén y lo decoramos juntos, como decía antes.'
+                    reaction = 'Todos los años ponemos el belén y lo decoramos juntos, como decía antes.'
                 else:
                     reaction = random.choice(response_dict['tree'])
                     bot_infos.remove('tree')
@@ -678,9 +677,9 @@ class Bot:
                     if string == keyword:
                         current_attribute = student.gifts
                         if self.check_whether_info_already_given('gifts'):
-                            bot_response = self.generate_response_to_user_question('Ya dije eso: Tenía la figura en mi pieza este año. Y tengo un videojuego y una cámara nueva.', student.gifts)
+                            bot_response = self.generate_response_to_user_question('Ya dije eso: Tenía la figura en mi pieza de pastel este año. Y tengo un videojuego y una cámara nueva.', student.gifts)
                         else:
-                            bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts'])+ '¡Tenía la figura en mi pieza este año! Y tengo un videojuego y una cámara nueva.', student.gifts)
+                            bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts'])+ 'Tenía la figura en mi pieza de pastel este año. Y tengo un videojuego y una cámara nueva.', student.gifts)
                             bot_infos.remove('gifts')
                         self.delay_response(bot_response)
                         return bot_response
@@ -693,7 +692,7 @@ class Bot:
                     if string == keyword:
                         current_attribute = student.tree
                         if self.check_whether_info_already_given('tree'):
-                            bot_response = self.generate_response_to_user_question('Como te dije antes, no solemos tener un árbol de Navidad, sino que decoramos el belén.', student.tree)
+                            bot_response = self.generate_response_to_user_question('Como te dije antes, no solemos tener un árbol navideño, sino que decoramos el belén.', student.tree)
                             self.delay_response(bot_response)
                         else:
                             bot_response = self.generate_response_to_user_question(random.choice(response_dict['tree']), current_attribute)
@@ -912,7 +911,7 @@ class Bot:
                             student.religious.value = False
                             bot_should_prompt_question = False
                             current_inq = 'non_religious_holidays'
-                            bot_response = self.generate_response('Si no celebras las Navidades, ¿hiciste algo más especial durante las vacaciones?', student.religious)
+                            bot_response = self.generate_response('Si no celebras la Navidad, ¿hiciste algo especial durante las vacaciones?', student.religious)
                             self.delay_response(bot_response) 
                             return bot_response
                         elif current_attribute == student.gifts: 
@@ -1006,7 +1005,7 @@ class Bot:
             return bot_response
         elif current_inq == 'non_religious_holidays':
             current_inq = None
-            bot_response = "¡Ah, ya entiendo! Mi maestro dijo que deberíamos hablar sobre las tradiciones navideñas en nuestra cultura, así que tal vez solo les hable sobre las tradiciones españolas. ¿Que quieres saber?"
+            bot_response = "¡Ah, ya entiendo! Mi maestro dijo que deberíamos hablar sobre las tradiciones navideñas en nuestra cultura, así que tal vez solo te hablo sobre las tradiciones españolas. ¿Qué quieres saber?"
             self.delay_response(bot_response)
             return bot_response
 
