@@ -28,7 +28,7 @@ name_keywords = ['llamo', 'nombre', 'soy']
 response_keywords = ['sí', 'si', 'no']
 food_keywords = ['come', 'como', 'comemos', 'comiste', 'comistéis', 'comer', 'comisteis', 'comimos', 'comida', 'comido']
 weather_keywords = ['nieve', 'sol', 'fría', 'fria', 'frio', 'frío', 'cálida', 'calida', 'cálido', 'calido', 'lluvia', 'lloviendo', 'lluvioso', 'tiempo', 'nevando', 'calor']
-gift_keywords = ['regalos', 'regalo', 'regalaron', 'tengo', 'recibí', 'recibi', 'regalar']
+gift_keywords = ['regalos', 'regalo', 'regalaron', 'tengo', 'recibí', 'recibi', 'regalar', 'recibido']
 tree_keywords = ['árbol', 'arbol', 'decoras', 'decora', 'adornos', 'decoración', 'decoracion']
 # TODO: negation_keywords = ['nunca', 'jamás', 'jamas']
 
@@ -178,9 +178,26 @@ class Bot:
                 return False
         return True
 
+    def check_whether_conversation_should_end(self):
+        global attributes
+        global bot_infos
+
+        for attribute in attributes:
+            if self.check_whether_attribute_already_finished(attribute) == False:
+                return False
+        
+        for info in bot_infos:
+            if self.check_whether_info_already_given(info) == False:
+                return False
+
+        return True
+
     # remove finished attribute
     def update_attribute_todo_list(self, attribute_to_be_removed):
         global attributes
+        global current_attribute
+
+        current_attribute = None
 
         for attribute in attributes:
             if attribute == attribute_to_be_removed:
@@ -262,7 +279,7 @@ class Bot:
         global current_inq
 
         # randomly select whether bot should prompt a question after reacting to user message
-        # FALSE shoudl be 2 times more likely
+        # FALSE should be 2 times more likely
         bot_should_prompt_question = random.choice([True, False, False])
         
         # remove punctuation
@@ -272,7 +289,7 @@ class Bot:
         splitMessage = last_user_message_cleaned.split()
 
         for keyword in curse_keywords:
-            keyword.lower()
+            keyword = keyword.lower()
             for index, string in enumerate(splitMessage):
                 string = string.lower()
                 if string == keyword:
@@ -289,7 +306,7 @@ class Bot:
         if last_user_message.__contains__('tú?') or last_user_message.__contains__('tu?'):
             # for messages containing "sí" or "no" (or variations)
             for keyword in response_keywords:
-                keyword.lower()
+                keyword = keyword.lower()
                 for index, string in enumerate(splitMessage):
                     string = string.lower()
                     if string == keyword:
@@ -671,7 +688,7 @@ class Bot:
         if last_user_message.__contains__("?"):
             # check if user asked about gifts
             for keyword in gift_keywords:
-                keyword.lower()
+                keyword = keyword.lower()
                 for index, string in enumerate(splitMessage):
                     string = string.lower()
                     if string == keyword:
@@ -679,7 +696,7 @@ class Bot:
                         if self.check_whether_info_already_given('gifts'):
                             bot_response = self.generate_response_to_user_question('Ya dije eso: Tenía la figura en mi pieza de pastel este año. Y tengo un videojuego y una cámara nueva.', student.gifts)
                         else:
-                            bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts'])+ 'Tenía la figura en mi pieza de pastel este año. Y tengo un videojuego y una cámara nueva.', student.gifts)
+                            bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts'])+ ' Tenía la figura en mi pieza de pastel este año. Y tengo un videojuego y una cámara nueva.', student.gifts)
                             bot_infos.remove('gifts')
                         self.delay_response(bot_response)
                         return bot_response
@@ -741,7 +758,7 @@ class Bot:
 
         # check keywords (message did not contain any question)
         for keyword in name_keywords:
-            keyword.lower()
+            keyword = keyword.lower()
             for index, string in enumerate(splitMessage):
                 string = string.lower()
                 if string == keyword:
@@ -762,7 +779,7 @@ class Bot:
                             return self.defaultResponse
             
         for keyword in response_keywords:
-            keyword.lower()
+            keyword = keyword.lower()
             for index, string in enumerate(splitMessage):
                 string = string.lower()
                 if string == keyword:
@@ -774,7 +791,7 @@ class Bot:
                             bot_response = self.generate_response(random.choice(short_response_dict['other_deco_si']), student.tree)
                             self.delay_response(bot_response)
                             return bot_response
-                        if len(splitMessage) < 3:
+                        if len(splitMessage) < 4:
                             if current_attribute == student.gifts:
                                 inq_counter += 1
                                 current_inq = 'gifts_si' 
@@ -1011,9 +1028,9 @@ class Bot:
 
         # FOOD
         for keyword in food_keywords:
-            keyword.lower()
+            keyword = keyword.lower()
             for index, string in enumerate(splitMessage):
-                string.lower()
+                string = string.lower()
                 if string == keyword:
                     # TODO: save what student mentioned about what they ate
                     if self.check_whether_info_already_given('food'):
@@ -1040,9 +1057,9 @@ class Bot:
 
         # WEATHER
         for keyword in weather_keywords:
-            keyword.lower()
+            keyword = keyword.lower()
             for index, string in enumerate(splitMessage):
-                string.lower()
+                string = string.lower()
                 if string == keyword:
                     # TODO: process what the student mentioned about the weather
                     # differentiate between cold and warm weather in the bot's response
@@ -1069,9 +1086,9 @@ class Bot:
 
          # TREE
         for keyword in tree_keywords:
-            keyword.lower()
+            keyword = keyword.lower()
             for index, string in enumerate(splitMessage):
-                string.lower()
+                string = string.lower()
                 if string == keyword:
                     if self.check_whether_info_already_given('tree'):
                         if student.religious.value == False:
@@ -1088,9 +1105,9 @@ class Bot:
         
         # GIFTS
         for keyword in gift_keywords:
-            keyword.lower()
+            keyword = keyword.lower()
             for index, string in enumerate(splitMessage):
-                string.lower()
+                string = string.lower()
                 if string == keyword:
                     # TODO: process what the student mentioned about their gifts
                     if self.check_whether_info_already_given('gifts'):
@@ -1114,8 +1131,13 @@ class Bot:
                     self.delay_response(bot_response)
                     return bot_response
 
+        if self.check_whether_conversation_should_end():
+            bot_response = self.endMessage
+            self.delay_response(bot_response)
+            return bot_response
+
         # fallback response: smiley
         return '\U0001F60A'
 
     def welcome(self):
-        return '¡Hola! Me llamo ' + self.name + ' y soy de ' + self.country + ' ¿Cómo te llamas?' 
+        return '¡Hola! Me llamo ' + self.name + ' y soy de ' + self.country + ' ¿Cómo te llamas?'
