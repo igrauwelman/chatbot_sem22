@@ -97,7 +97,7 @@ short_response_dict = {
 
 # dictionary with responses
 response_dict = {
-    "introduction": ["""Hablemos de las vacaciones. ¿Celebras Navidad?""",
+    "introduction": ["""Hablamos de las vacaciones. ¿Celebras Navidad?""",
                     """¿Qué tal las vacaciones? ¿Celebras la Navidad?"""],
 
     "religious": ["""También celebré la Navidad. 
@@ -127,10 +127,10 @@ response_dict = {
                 o después de la comida festiva."""],
 # TODO: check if Alma's personal gifts are added in each response
     "gifts": ["""La entrega de regalos se celebra en España el 6 de enero. Es el día de los Reyes Magos. 
-                Traen regalos a los niños. Tradicionalmente hay un "Resoco de Reyes". Es un pastel en forma de anillo 
+                Traen regalos a los niños. Tradicionalmente hay un "Roscón de Reyes". Es un pastel en forma de anillo 
                 con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día.""",
             """En España, el día de los Reyes Magos, el 6 de enero, es cuando se celebra la entrega de regalos. 
-                Los Reyes Magos traen regalos a los niños. También se celebra el "Resoco de Reyes", que es un pastel 
+                Los Reyes Magos traen regalos a los niños. También se celebra el "Roscón de Reyes", que es un pastel 
                 en forma de anillo con una figura escondida en su interior. Quien tenga la figura en su porción puede 
                 considerarse rey durante todo el día."""],
 
