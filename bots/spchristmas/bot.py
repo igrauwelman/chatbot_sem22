@@ -25,7 +25,7 @@ bot_infos = ['gifts', 'tree', 'food', 'weather']
 # KEYWORDS
 curse_keywords = ['ano', 'puta madre', 'puta', 'coño', 'cojones', 'cabrón', 'joder', 'sex', 'penis', 'arschloch']
 name_keywords = ['llamo', 'nombre', 'soy']
-response_keywords = ['sí', 'si', 'no']
+response_keywords = ['sí', 'si', 'no', 'tambien', 'tambíen', 'también', 'tampoco']
 food_keywords = ['come', 'como', 'comemos', 'comiste', 'comistéis', 'comer', 'comisteis', 'comimos', 'comida', 'comido']
 weather_keywords = ['nieve', 'sol', 'fría', 'fria', 'frio', 'frío', 'cálida', 'calida', 'cálido', 'calido', 'lluvia', 'lloviendo', 'lluvioso', 'tiempo', 'nevando', 'calor']
 gift_keywords = ['regalos', 'regalo', 'regalaron', 'tengo', 'recibí', 'recibi', 'regalar', 'recibido']
@@ -288,6 +288,7 @@ class Bot:
         # split message into word chunks
         splitMessage = last_user_message_cleaned.split()
 
+        # check for curse words
         for keyword in curse_keywords:
             keyword = keyword.lower()
             for index, string in enumerate(splitMessage):
@@ -310,7 +311,7 @@ class Bot:
                 for index, string in enumerate(splitMessage):
                     string = string.lower()
                     if string == keyword:
-                        if keyword == str('sí') or keyword == str('si'):
+                        if keyword == str('sí') or keyword == str('si') or keyword == str('tambien') or keyword == str('tambíen') or keyword == str('también'):
                             if current_attribute == student.tree and inq_counter == 1 and len(splitMessage) > 3:
                                 # TODO: not sure, because user could have said "Ah, muy interesante! Si, we have other decoration" for example
                                 # we are here if user said that they do not have a tree, but said that they have other traditional decoration (probably already stated what kind of decoration due to the message length) and added "y tú?" (or variations)
@@ -438,7 +439,7 @@ class Bot:
                                 bot_response = self.generate_response(reaction, student.weather)
                                 self.delay_response(bot_response)
                                 return bot_response
-                        elif keyword == str('no'):
+                        elif keyword == str('no') or keyword == str('tampoco'):
                             if len(splitMessage) < 4:
                                 if current_attribute == student.gifts:
                                     if inq_counter == 0:
@@ -783,7 +784,7 @@ class Bot:
             for index, string in enumerate(splitMessage):
                 string = string.lower()
                 if string == keyword:
-                    if keyword == str('sí') or keyword == str('si'):
+                    if keyword == str('sí') or keyword == str('si') or keyword == str('tambien') or keyword == str('tambíen') or keyword == str('también'):
                         if current_attribute == student.tree and inq_counter == 1 and len(splitMessage) > 3:
                             # we are here if user said that they do not have a tree, but said that they have other traditional decoration (probably already stated what kind of decoration due to the message length)
                             inq_counter = 0
@@ -881,7 +882,7 @@ class Bot:
                             bot_response = self.generate_response(reaction, student.weather)
                             self.delay_response(bot_response)
                             return bot_response
-                    elif keyword == str('no'):
+                    elif keyword == str('no') or keyword == str('tampoco'):
                         if len(splitMessage) < 4:
                             if current_attribute == student.gifts:
                                 inq_counter += 1
@@ -1015,7 +1016,7 @@ class Bot:
             current_attribute = student.religious
             bot_should_prompt_question = True 
             if last_user_message_cleaned.__contains__('también') or last_user_message_cleaned.__contains__('tambien') or last_user_message_cleaned.__contains__('bien') or last_user_message_cleaned.__contains__('También') or last_user_message_cleaned.__contains__('Tambien') or last_user_message_cleaned.__contains__('Bien'):
-                bot_response = 'Nice! ' + random.choice(response_dict['introduction'])
+                bot_response = '¡Bonito! ' + random.choice(response_dict['introduction'])
             else:
                 bot_response = "Siento escuchar eso :( " + random.choice(response_dict['introduction'])
             self.delay_response(bot_response)
