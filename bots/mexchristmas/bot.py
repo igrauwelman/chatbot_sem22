@@ -100,17 +100,27 @@ response_dict = {
                     """¿Qué tal las vacaciones? ¿Celebras la Navidad?"""],
 
     "religious": ["""También celebré la Navidad. 
-                    En México , las familias preparan una gran celebración para toda la familia para Nochebuena. Y hay muchos juegos para niños, como golpear piñatas rellenas con frutas, dulces y regalos pequeños.""",
-                 """Yo tambíen. TODO"""],
+                    En México, las familias preparan una gran celebración para toda la familia para Nochebuena. 
+                    Y hay muchos juegos para niños, como golpear piñatas rellenas con frutas, dulces y regalos pequeños.""",
+                 """Yo tambíen. En México, se celebra Nochebuena con una gran fiesta familiar, donde se incluyen juegos 
+                 divertidos para los niños, como romper piñatas llenas de frutas, dulces y pequeños regalos."""],
 
-    "food": ["""En México, la mayoría de las familias come pavo con ensalada de manzana y pescado en salsa de tomate en Nochebuena, pero muchas otras familias también comen su propia comida tradicional, como tacos, enchiladas, quesadillas y burritos con guacamole. Y siempre hay salsa picante.""",
-            """TODO"""],
+    "food": ["""En México, la mayoría de las familias come pavo con ensalada de manzana y pescado en salsa de tomate en Nochebuena, 
+                pero muchas otras familias también comen su propia comida tradicional, como tacos, enchiladas, quesadillas y burritos 
+                con guacamole. Y siempre hay salsa picante.""",
+            """En México, durante Nochebuena, es común que las familias disfruten de una cena que incluye pavo con ensalada de manzana 
+            y pescado en salsa de tomate, pero también es frecuente que muchas familias opten por platos tradicionales como tacos, 
+            enchiladas, quesadillas y burritos acompañados de guacamole. Es importante mencionar que siempre se incluye salsa picante en la mesa."""],
 # TODO: check if José's personal gifts are added in each response
     "gifts": ["""Los regalos sólo se desenvuelven a medianoche en México, lo que siempre hace más felices a los niños.""",
-            """TODO"""],
+            """En México, se suele esperar hasta medianoche para desenvolver los regalos, lo que hace que los niños se 
+                emocionen aún más con la celebración."""],
 
-    "tree": ["""Antes en México no se ponían árboles de Navidad, fue hasta que nos enteramos por los europeos que nos pareció una gran idea y ahora ¡también lo hacemos! Mucho más importante para nosotros es la cuna de Navidad, que recrea el nacimiento de Jesús""",
-            """TODO"""],
+    "tree": ["""Antes en México no se ponían árboles de Navidad, fue hasta que nos enteramos por los europeos que nos pareció una gran idea 
+            y ahora ¡también lo hacemos! Mucho más importante para nosotros es la cuna de Navidad, que recrea el nacimiento de Jesús.""",
+            """En México, antes no se utilizaban los árboles de Navidad como parte de las celebraciones, pero después de conocer esta 
+            tradición a través de los europeos, se ha adoptado y es común verlos en las celebraciones navideñas. Sin embargo, 
+            lo que sigue siendo más importante para los mexicanos es la recreación de la cuna de Navidad, que simboliza el nacimiento de Jesús."""],
 
     "weather": ["""Aquí en Cancún mucha gente pasó las Navidades en la playa porque hacía mucho calor. Entonces, ¡el árbol de Navidad está hecho con una palmera!""",
                 """En mi ciudad Cancún, mucha gente pasó las Navidades en la playa, ¡porque hacía mucho calor! Entonces, ¡el árbol de Navidad está hecho con una palmera!"""]
