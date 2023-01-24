@@ -111,10 +111,10 @@ response_dict = {
             """En México, durante Nochebuena, es común que las familias disfruten de una cena que incluye pavo con ensalada de manzana 
             y pescado en salsa de tomate, pero también es frecuente que muchas familias opten por platos tradicionales como tacos, 
             enchiladas, quesadillas y burritos acompañados de guacamole. Es importante mencionar que siempre se incluye salsa picante en la mesa."""],
-# TODO: check if José's personal gifts are added in each response
-    "gifts": ["""Los regalos sólo se desenvuelven a medianoche en México, lo que siempre hace más felices a los niños.""",
+
+    "gifts": ["""Los regalos sólo se desenvuelven a medianoche en México, lo que siempre hace más felices a los niños. Me regalaron una guitarra nueva y varios libros por Navidad.""",
             """En México, se suele esperar hasta medianoche para desenvolver los regalos, lo que hace que los niños se 
-                emocionen aún más con la celebración."""],
+                emocionen aún más con la celebración. Me regalaron una guitarra nueva y varios libros por Navidad."""],
 
     "tree": ["""Antes en México no se ponían árboles de Navidad, fue hasta que nos enteramos por los europeos que nos pareció una gran idea 
             y ahora ¡también lo hacemos! Mucho más importante para nosotros es la cuna de Navidad, que recrea el nacimiento de Jesús.""",
@@ -291,7 +291,7 @@ class Bot:
                     if string == keyword:
                         if keyword == str('sí') or keyword == str('si') or keyword == str('tambien') or keyword == str('tambíen') or keyword == str('también'):
                             if current_attribute == student.tree and inq_counter == 1 and len(splitMessage) > 3:
-                                # TODO: not sure, because user could have said "Ah, muy interesante! Si, we have other decoration" for example
+                                # TODO: user could have said "Ah, muy interesante! Si, we have other decoration" for example --> bot should ask further in this case as well
                                 # we are here if user said that they do not have a tree, but said that they have other traditional decoration (probably already stated what kind of decoration due to the message length) and added "y tú?" (or variations)
                                 inq_counter = 0
                                 current_inq = None
@@ -396,7 +396,6 @@ class Bot:
                                 self.delay_response(bot_response)
                                 return  bot_response
                             elif current_attribute == student.tree:
-                                # TODO: check if inq==0 if clause is the same (see above)
                                 student.tree.value = True
                                 if self.check_whether_info_already_given('tree'):
                                     reaction = 'Eso suena genial. Como he mencionado antes, también teníamos un árbol de Navidad.'
@@ -407,7 +406,6 @@ class Bot:
                                 self.delay_response(bot_response)
                                 return bot_response
                             elif current_attribute == student.weather:
-                                # TODO: check if if-clause above is the same
                                 student.weather.value = True
                                 if self.check_whether_info_already_given('weather'):
                                     reaction = '¡Wow, me encantaría ver eso! Como te dije antes, en mi ciudad normalmente hace calor.'
@@ -513,7 +511,6 @@ class Bot:
                                 self.delay_response(bot_response)
                                 return bot_response
                             elif current_attribute == student.tree:
-                                # TODO: check above if already a case
                                 student.tree.value = False
                                 if self.check_whether_info_already_given('tree'):
                                     reaction = 'No está mal, aquí en México tampoco tuvimos árbol de Navidad por mucho tiempo. Pero ahora tenemos uno, ¡como ya te he dicho!'
@@ -589,7 +586,6 @@ class Bot:
                     string.lower()
                     if string == keyword:
                         # TODO: process what the student mentioned about the weather
-                        # differentiate between cold and warm weather in the bot's response
                         if self.check_whether_info_already_given('weather'):
                             reaction = '¡Ah, interesante! Como ya he dicho, aquí hacía mucho calor, como todos los años.'
                         else:
@@ -674,7 +670,7 @@ class Bot:
                         if self.check_whether_info_already_given('gifts'):
                             bot_response = self.generate_response_to_user_question('Ya lo he mencionado antes: me regalaron una guitarra nueva y varios libros por Navidad.', student.gifts)
                         else:
-                            bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts'])+ ' Me regalaron una guitarra nueva y varios libros por Navidad.', student.gifts)
+                            bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts']), student.gifts)
                             bot_infos.remove('gifts')
                         self.delay_response(bot_response)
                         return bot_response
@@ -953,8 +949,6 @@ class Bot:
                     else:
                         return self.defaultResponse
 
-        # TODO: do the same for negation keywords --> check current attribute to find out what the student "negates"
-
         # messages that are responses to the bot's inquiries about an attribute (without the user asking back or asking another question)
         if current_inq == 'gifts_si':
             # save what user mentioned about gift
@@ -1040,7 +1034,6 @@ class Bot:
                 string = string.lower()
                 if string == keyword:
                     # TODO: process what the student mentioned about the weather
-                    # differentiate between cold and warm weather in the bot's response
                     if self.check_whether_info_already_given('weather'):
                         if student.religious.value == False:
                             reaction = 'Como ya he dicho, hacía mucho calor en nuestra ciudad.'

@@ -125,14 +125,14 @@ response_dict = {
                 almendras tostadas, azúcar, clara de huevo y miel. A veces también se añade fruta confitada, 
                 chocolate o mazapán. El turrón es una especialidad navideña española y se suele comer entre 
                 o después de la comida festiva."""],
-# TODO: check if Alma's personal gifts are added in each response
+
     "gifts": ["""La entrega de regalos se celebra en España el 6 de enero. Es el día de los Reyes Magos. 
                 Traen regalos a los niños. Tradicionalmente hay un "Roscón de Reyes". Es un pastel en forma de anillo 
-                con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día.""",
+                con una figura en su interior. Quien tenga la figura en su pieza puede llamarse rey durante todo el día. ¡Tenía la figura en mi pieza de pastel este año! Y tengo un videojuego y una cámara nueva.""",
             """En España, el día de los Reyes Magos, el 6 de enero, es cuando se celebra la entrega de regalos. 
                 Los Reyes Magos traen regalos a los niños. También se celebra el "Roscón de Reyes", que es un pastel 
                 en forma de anillo con una figura escondida en su interior. Quien tenga la figura en su porción puede 
-                considerarse rey durante todo el día."""],
+                considerarse rey durante todo el día. ¡Tenía la figura en mi pieza de pastel este año! Y tengo un videojuego y una cámara nueva."""],
 
     "tree": ["""No tenemos un árbol de Navidad, pero ponemos un belén con la familia y lo decoramos. 
                 Pero sé que algunos de mis amigos también tienen ya un árbol de Navidad.""",
@@ -313,7 +313,7 @@ class Bot:
                     if string == keyword:
                         if keyword == str('sí') or keyword == str('si') or keyword == str('tambien') or keyword == str('tambíen') or keyword == str('también'):
                             if current_attribute == student.tree and inq_counter == 1 and len(splitMessage) > 3:
-                                # TODO: not sure, because user could have said "Ah, muy interesante! Si, we have other decoration" for example
+                                # TODO: user could have said "Ah, muy interesante! Si, we have other decoration" for example --> bot should ask further in this case as well
                                 # we are here if user said that they do not have a tree, but said that they have other traditional decoration (probably already stated what kind of decoration due to the message length) and added "y tú?" (or variations)
                                 inq_counter = 0
                                 current_inq = None
@@ -418,7 +418,6 @@ class Bot:
                                 self.delay_response(bot_response)
                                 return  bot_response
                             elif current_attribute == student.tree:
-                                # TODO: check if inq==0 if clause is the same (see above)
                                 student.tree.value = True
                                 if self.check_whether_info_already_given('tree'):
                                     reaction = 'Eso suena genial. Como mencioné anteriormente, no teníamos un árbol de Navidad, pero decoramos el belén.'
@@ -429,7 +428,6 @@ class Bot:
                                 self.delay_response(bot_response)
                                 return bot_response
                             elif current_attribute == student.weather:
-                                # TODO: check if if-clause above is the same
                                 student.weather.value = True
                                 if self.check_whether_info_already_given('weather'):
                                     reaction = '¡Wow, me encantaría ver eso! Como te dije antes, en mi ciudad suele hacer calor.'
@@ -535,7 +533,6 @@ class Bot:
                                 self.delay_response(bot_response)
                                 return bot_response
                             elif current_attribute == student.tree:
-                                # TODO: check above if already a case
                                 student.tree.value = False
                                 if self.check_whether_info_already_given('tree'):
                                     reaction = 'No importa, ¡no todas las familias tienen árbol de Navidad! Como dije, generalmente no tenemos un árbol navideño'
@@ -611,7 +608,6 @@ class Bot:
                     string.lower()
                     if string == keyword:
                         # TODO: process what the student mentioned about the weather
-                        # differentiate between cold and warm weather in the bot's response
                         if self.check_whether_info_already_given('weather'):
                             reaction = '¡Ay interesante! Como dije, hacía bastante calor con nosotros y no había nieve.'
                         else:
@@ -697,7 +693,7 @@ class Bot:
                         if self.check_whether_info_already_given('gifts'):
                             bot_response = self.generate_response_to_user_question('Ya dije eso: Tenía la figura en mi pieza de pastel este año. Y tengo un videojuego y una cámara nueva.', student.gifts)
                         else:
-                            bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts'])+ ' Tenía la figura en mi pieza de pastel este año. Y tengo un videojuego y una cámara nueva.', student.gifts)
+                            bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts']), student.gifts)
                             bot_infos.remove('gifts')
                         self.delay_response(bot_response)
                         return bot_response
@@ -976,8 +972,6 @@ class Bot:
                     else:
                         return self.defaultResponse
 
-        # TODO: do the same for negation keywords --> check current attribute to find out what the student "negates"
-
         # messages that are responses to the bot's inquiries about an attribute (without the user asking back or asking another question)
         if current_inq == 'gifts_si':
             # save what user mentioned about gift
@@ -1063,7 +1057,6 @@ class Bot:
                 string = string.lower()
                 if string == keyword:
                     # TODO: process what the student mentioned about the weather
-                    # differentiate between cold and warm weather in the bot's response
                     if self.check_whether_info_already_given('weather'):
                         if student.religious.value == False:
                             reaction = 'Como dije, hacía bastante calor en Málaga.'
