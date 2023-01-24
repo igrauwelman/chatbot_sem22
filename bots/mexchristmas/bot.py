@@ -111,10 +111,10 @@ response_dict = {
             """En México, durante Nochebuena, es común que las familias disfruten de una cena que incluye pavo con ensalada de manzana 
             y pescado en salsa de tomate, pero también es frecuente que muchas familias opten por platos tradicionales como tacos, 
             enchiladas, quesadillas y burritos acompañados de guacamole. Es importante mencionar que siempre se incluye salsa picante en la mesa."""],
-# TODO: check if José's personal gifts are added in each response
-    "gifts": ["""Los regalos sólo se desenvuelven a medianoche en México, lo que siempre hace más felices a los niños.""",
+
+    "gifts": ["""Los regalos sólo se desenvuelven a medianoche en México, lo que siempre hace más felices a los niños. Me regalaron una guitarra nueva y varios libros por Navidad.""",
             """En México, se suele esperar hasta medianoche para desenvolver los regalos, lo que hace que los niños se 
-                emocionen aún más con la celebración."""],
+                emocionen aún más con la celebración. Me regalaron una guitarra nueva y varios libros por Navidad."""],
 
     "tree": ["""Antes en México no se ponían árboles de Navidad, fue hasta que nos enteramos por los europeos que nos pareció una gran idea 
             y ahora ¡también lo hacemos! Mucho más importante para nosotros es la cuna de Navidad, que recrea el nacimiento de Jesús.""",
@@ -291,7 +291,7 @@ class Bot:
                     if string == keyword:
                         if keyword == str('sí') or keyword == str('si') or keyword == str('tambien') or keyword == str('tambíen') or keyword == str('también'):
                             if current_attribute == student.tree and inq_counter == 1 and len(splitMessage) > 3:
-                                # TODO: not sure, because user could have said "Ah, muy interesante! Si, we have other decoration" for example
+                                # TODO: user could have said "Ah, muy interesante! Si, we have other decoration" for example --> bot should ask further in this case as well
                                 # we are here if user said that they do not have a tree, but said that they have other traditional decoration (probably already stated what kind of decoration due to the message length) and added "y tú?" (or variations)
                                 inq_counter = 0
                                 current_inq = None
@@ -309,6 +309,7 @@ class Bot:
                                     # we are here if the bot asked about gifts for the first time and the user answered "sí y tú?" (or variations)
                                     inq_counter += 1
                                     current_inq = 'gifts_si' 
+                                    student.got_gifts.value = True
                                     if self.check_whether_info_already_given('gifts'):
                                         reaction = 'Como te dije, me regalaron una guitarra nueva y varios libros.'
                                     else:
@@ -334,6 +335,7 @@ class Bot:
                                         # we are here if the bot asked about the tree for the first time and the user answered "sí y tú?" (or variations)
                                         inq_counter += 1
                                         current_inq = 'tree_si' 
+                                        student.tree.value = True
                                         if self.check_whether_info_already_given('tree'):
                                             reaction = 'Como he mencionado antes, también teníamos un árbol de Navidad.'
                                         else:
@@ -347,6 +349,7 @@ class Bot:
                                         # we are here if user said that it was cold and that it snowed and added "y tú?" (or variations)
                                         inq_counter = 0
                                         current_inq = None
+                                        student.weather.value = 'frío, nieve'
                                         if self.check_whether_info_already_given('weather'):
                                             reaction = '¡Estoy celoso! Para mí, como ya he dicho, hacía mucho calor, no había posibilidad de nieve en Navidad.'
                                         else:
@@ -359,6 +362,7 @@ class Bot:
                                         # we are here if the user said that it was not cold and that they missed the snow and added "y tú?" (or variations)
                                         inq_counter = 0
                                         current_inq = None
+                                        student.weather.value = 'NOT COLD, MISSED SNOW'
                                         if self.check_whether_info_already_given('weather'):
                                             reaction = '¡A veces también me gustaría que nevara en Navidad! En mi ciudad, como ya he dicho, siempre hace mucho calor, pero también me gusta ir a la playa en Navidad.'
                                         else:
@@ -371,6 +375,7 @@ class Bot:
                                         # we are here if the bot asked whether it was cold for the first time and the user answered "sí y tú?" (or variations)
                                         inq_counter += 1
                                         current_inq = 'weather_si' 
+                                        student.weather.value = 'frío'
                                         if self.check_whether_info_already_given('weather'):
                                             reaction = 'En Cancún, como ya he dicho, siempre hace mucho calor.'
                                         else:
@@ -396,7 +401,6 @@ class Bot:
                                 self.delay_response(bot_response)
                                 return  bot_response
                             elif current_attribute == student.tree:
-                                # TODO: check if inq==0 if clause is the same (see above)
                                 student.tree.value = True
                                 if self.check_whether_info_already_given('tree'):
                                     reaction = 'Eso suena genial. Como he mencionado antes, también teníamos un árbol de Navidad.'
@@ -407,8 +411,7 @@ class Bot:
                                 self.delay_response(bot_response)
                                 return bot_response
                             elif current_attribute == student.weather:
-                                # TODO: check if if-clause above is the same
-                                student.weather.value = True
+                                student.weather.value = 'frío'
                                 if self.check_whether_info_already_given('weather'):
                                     reaction = '¡Wow, me encantaría ver eso! Como te dije antes, en mi ciudad normalmente hace calor.'
                                 else:
@@ -423,7 +426,9 @@ class Bot:
                                     if inq_counter == 0:
                                         # we are here if the bot asked about gifts for the first time and the user answered "no y tú?" (or variations)
                                         inq_counter += 1
-                                        current_inq = 'gifts_no' 
+                                        current_inq = 'gifts_no'
+                                        student.got_gifts.value = False
+                                        student.gifts.value = 'none' 
                                         if self.check_whether_info_already_given('gifts'):
                                             reaction = 'Ya te he contado que me han hecho regalos de Navidad, pero creo que lo más importante es disfrutar del bonito tiempo libre junto con la familia y los amigos.'
                                         else:
@@ -449,6 +454,7 @@ class Bot:
                                         # we are here if the bot asked about the tree for the first time and the user answered "no y tú?" (or variations)
                                         inq_counter += 1
                                         current_inq = 'tree_no' 
+                                        student.tree.value = False
                                         if self.check_whether_info_already_given('tree'):
                                             reaction = 'Como te dije, teníamos un árbol de Navidad, aunque no era una tradición en México desde hace mucho tiempo.'
                                         else:
@@ -462,6 +468,7 @@ class Bot:
                                         # we are here if user said that it was cold, but that it did not snow and added "y tú?" (or variations)
                                         inq_counter = 0
                                         current_inq = None
+                                        student.weather.value = 'frío, no nieve'
                                         if self.check_whether_info_already_given('weather'):
                                             reaction = 'Como dije antes, en Navidad siempre hace mucho calor en Cancún, así que aquí tampoco hay nieve.'
                                         else:
@@ -474,6 +481,7 @@ class Bot:
                                         # we are here if user said that it was not cold, and that they did not miss the snow and added "y tú?" (or variations)
                                         inq_counter = 0
                                         current_inq = None
+                                        student.weather.value = 'NOT COLD, DID NOT MISS SNOW'
                                         if self.check_whether_info_already_given('weather'):
                                             reaction = 'En mi ciudad nunca nieva en invierno, así que ni siquiera en Navidad. A veces me pregunto, ¿cómo sería celebrar la Navidad con nieve?. Pero también me parece bonito celebrar la Navidad en la playa de Cancún.'
                                         else:
@@ -486,6 +494,7 @@ class Bot:
                                         # we are here if the bot asked whether it was cold for the first time and the user answered "no y tú?" (or variations)
                                         inq_counter += 1
                                         current_inq = 'weather_no' 
+                                        student.weather.value = 'NOT COLD'
                                         if self.check_whether_info_already_given('weather'):
                                             reaction = 'Como ya he dicho, aquí tampoco hacía frío, normalmente hace mucho calor en Navidad.'
                                         else:
@@ -513,7 +522,6 @@ class Bot:
                                 self.delay_response(bot_response)
                                 return bot_response
                             elif current_attribute == student.tree:
-                                # TODO: check above if already a case
                                 student.tree.value = False
                                 if self.check_whether_info_already_given('tree'):
                                     reaction = 'No está mal, aquí en México tampoco tuvimos árbol de Navidad por mucho tiempo. Pero ahora tenemos uno, ¡como ya te he dicho!'
@@ -524,7 +532,7 @@ class Bot:
                                 self.delay_response(bot_response)
                                 return bot_response
                             elif current_attribute == student.weather:
-                                student.weather.value = False
+                                student.weather.value = 'NOT COLD'
                                 if self.check_whether_info_already_given('weather'):
                                     reaction = 'Entonces, ¡tuvimos un clima similar!'
                                 else:
@@ -589,7 +597,6 @@ class Bot:
                     string.lower()
                     if string == keyword:
                         # TODO: process what the student mentioned about the weather
-                        # differentiate between cold and warm weather in the bot's response
                         if self.check_whether_info_already_given('weather'):
                             reaction = '¡Ah, interesante! Como ya he dicho, aquí hacía mucho calor, como todos los años.'
                         else:
@@ -674,7 +681,7 @@ class Bot:
                         if self.check_whether_info_already_given('gifts'):
                             bot_response = self.generate_response_to_user_question('Ya lo he mencionado antes: me regalaron una guitarra nueva y varios libros por Navidad.', student.gifts)
                         else:
-                            bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts'])+ ' Me regalaron una guitarra nueva y varios libros por Navidad.', student.gifts)
+                            bot_response = self.generate_response_to_user_question(random.choice(response_dict['gifts']), student.gifts)
                             bot_infos.remove('gifts')
                         self.delay_response(bot_response)
                         return bot_response
@@ -771,6 +778,14 @@ class Bot:
                             return bot_response
                         if len(splitMessage) < 4:
                             if current_attribute == student.gifts:
+                                student.got_gifts.value = True
+                                # if user writes (only) "también" or variations, they state that they got the same as the bot -> bot should not ask further about what gifts the user got
+                                if keyword != str('si') or keyword != str('sí'):
+                                    student.gifts.value = 'una guitarra nueva, varios libros'
+                                    reaction = '¡Qué padre!'
+                                    bot_response = self.generate_response(reaction, student.gifts)
+                                    self.delay_response(bot_response)
+                                    return bot_response
                                 inq_counter += 1
                                 current_inq = 'gifts_si' 
                                 bot_response = random.choice(short_response_dict['gifts_si'])
@@ -788,6 +803,7 @@ class Bot:
                                 elif inq_counter == 0:
                                     inq_counter += 1
                                     current_inq = 'tree_si'
+                                    student.tree.value = True
                                     bot_response = random.choice(short_response_dict['tree_si'])
                                     self.delay_response(bot_response)
                                     return bot_response
@@ -797,6 +813,7 @@ class Bot:
                                     self.update_attribute_todo_list(student.weather)
                                     inq_counter = 0
                                     current_inq = None
+                                    student.weather.value = 'frío, nieve'
                                     bot_response = self.generate_response(random.choice(short_response_dict['snow_si']), student.weather)
                                     self.delay_response(bot_response)
                                     return bot_response
@@ -805,12 +822,14 @@ class Bot:
                                     self.update_attribute_todo_list(student.weather)
                                     inq_counter = 0
                                     current_inq = None
+                                    student.weather.value = 'NOT COLD, MISSED SNOW'
                                     bot_response = self.generate_response(random.choice(short_response_dict['missed_snow_si']), student.weather)
                                     self.delay_response(bot_response)
                                     return bot_response
                                 elif inq_counter == 0:
                                     inq_counter += 1
                                     current_inq = 'weather_si'
+                                    student.weather.value = 'frío'
                                     bot_response = random.choice(short_response_dict['weather_si'])
                                     self.delay_response(bot_response)
                                     return bot_response
@@ -847,7 +866,7 @@ class Bot:
                             self.delay_response(bot_response)
                             return bot_response
                         elif current_attribute == student.weather:
-                            student.weather.value = True
+                            student.weather.value = 'frío'
                             if self.check_whether_info_already_given('weather'):
                                 reaction = '¡Guau, me encantaría ver eso!'
                             else:
@@ -864,6 +883,8 @@ class Bot:
                             if current_attribute == student.gifts:
                                 inq_counter += 1
                                 current_inq = 'gifts_no'
+                                student.got_gifts.value = False
+                                student.gifts.value = 'none'
                                 bot_response = random.choice(short_response_dict['gifts_no'])
                                 self.delay_response(bot_response)
                                 return bot_response
@@ -885,6 +906,7 @@ class Bot:
                                     self.update_attribute_todo_list(student.weather)
                                     inq_counter = 0
                                     current_inq = None
+                                    student.weather.value = 'frío, no nieve'
                                     bot_response = self.generate_response(random.choice(short_response_dict['snow_no']), student.weather)
                                     self.delay_response(bot_response)
                                     return bot_response
@@ -893,12 +915,14 @@ class Bot:
                                     self.update_attribute_todo_list(student.weather)
                                     inq_counter = 0
                                     current_inq = None
+                                    student.weather.value = 'NOT COLD, DID NOT MISS SNOW'
                                     bot_response = self.generate_response(random.choice(short_response_dict['missed_snow_no']), student.weather)
                                     self.delay_response(bot_response)
                                     return bot_response 
                                 elif inq_counter == 0:
                                     inq_counter += 1
                                     current_inq = 'weather_no'
+                                    student.weather.value = 'NOT COLD'
                                     bot_response = random.choice(short_response_dict['weather_no'])
                                     self.delay_response(bot_response)
                                     return bot_response
@@ -937,7 +961,7 @@ class Bot:
                             self.delay_response(bot_response)
                             return bot_response
                         elif current_attribute == student.weather:
-                            student.weather.value = False
+                            student.weather.value = 'NOT COLD'
                             if self.check_whether_info_already_given('weather'):
                                 reaction = '¡Entonces ambos tuvimos un clima similar en Navidad!'
                             else:
@@ -952,8 +976,6 @@ class Bot:
                     # fallback response
                     else:
                         return self.defaultResponse
-
-        # TODO: do the same for negation keywords --> check current attribute to find out what the student "negates"
 
         # messages that are responses to the bot's inquiries about an attribute (without the user asking back or asking another question)
         if current_inq == 'gifts_si':
@@ -1040,7 +1062,6 @@ class Bot:
                 string = string.lower()
                 if string == keyword:
                     # TODO: process what the student mentioned about the weather
-                    # differentiate between cold and warm weather in the bot's response
                     if self.check_whether_info_already_given('weather'):
                         if student.religious.value == False:
                             reaction = 'Como ya he dicho, hacía mucho calor en nuestra ciudad.'
